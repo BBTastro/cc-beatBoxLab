@@ -223,19 +223,33 @@ function CreateChallengeDialog({ isOpen, onClose, onSubmit, editingChallenge }: 
     startDate: editingChallenge?.startDate || new Date(),
   });
 
+  // Update form data when editingChallenge changes
+  useEffect(() => {
+    if (editingChallenge) {
+      setFormData({
+        title: editingChallenge.title,
+        description: editingChallenge.description || '',
+        duration: editingChallenge.duration,
+        startDate: editingChallenge.startDate,
+      });
+      setStep('form'); // Skip template selection when editing
+    } else {
+      setFormData({
+        title: '',
+        description: '',
+        duration: 30,
+        startDate: new Date(),
+      });
+      setStep('template');
+    }
+  }, [editingChallenge]);
+
   // Reset state when dialog opens/closes
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       setStep('template');
       setSelectedTemplate(null);
-      if (!editingChallenge) {
-        setFormData({
-          title: '',
-          description: '',
-          duration: 30,
-          startDate: new Date(),
-        });
-      }
+      // Don't reset form data here - let useEffect handle it based on editingChallenge
       onClose();
     }
   };

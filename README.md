@@ -166,7 +166,7 @@ npm run db:reset     # Reset database (drop all tables)
 
 ### Core Pages
 - **Home (`/`)**: Landing page with challenge overview and beat grid
-- **Beats (`/beats`)**: Main tracking interface with visual progress grid and AI assistant
+- **steps (`/steps`)**: Main tracking interface with visual progress grid and AI assistant
 - **Rewards (`/rewards`)**: Three-tier reward system for motivation and achievement tracking  
 - **Motivation (`/motivation`)**: Personal motivational statement management with purpose framework
 - **Allies (`/allies`)**: Support network management with multi-platform communication

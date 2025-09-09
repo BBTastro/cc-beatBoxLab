@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ChevronDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ChallengeProvider, useChallengeContext } from "@/contexts/ChallengeContext";
 import { useSession } from "@/lib/auth-client";
@@ -623,6 +623,7 @@ function SettingsContent() {
   const [isExporting, setIsExporting] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [selectedChallengeForExport, setSelectedChallengeForExport] = useState<string>('all');
+  const [isChallengeDropdownOpen, setIsChallengeDropdownOpen] = useState(false);
 
   // Fix any multiple active challenges on load
   useEffect(() => {
@@ -1343,19 +1344,64 @@ function SettingsContent() {
               {/* Challenge Selection */}
               <div className="space-y-3">
                 <Label className="text-sm font-medium">Select Challenge</Label>
-                <Select value={selectedChallengeForExport} onValueChange={setSelectedChallengeForExport}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Challenges</SelectItem>
-                    {challenges.map((challenge) => (
-                      <SelectItem key={challenge.id} value={challenge.id}>
-                        {challenge.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="relative">
+                  {/* Custom Dropdown Trigger */}
+                  <button
+                    type="button"
+                    onClick={() => setIsChallengeDropdownOpen(!isChallengeDropdownOpen)}
+                    className="w-full flex items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50 h-9"
+                  >
+                    <span className="truncate">
+                      {selectedChallengeForExport === 'all' 
+                        ? 'All Challenges' 
+                        : challenges.find(c => c.id === selectedChallengeForExport)?.title || 'Select Challenge'
+                      }
+                    </span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </button>
+
+                  {/* Custom Dropdown Menu */}
+                  {isChallengeDropdownOpen && (
+                    <>
+                      {/* Backdrop */}
+                      <div 
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsChallengeDropdownOpen(false)}
+                      />
+                      
+                      {/* Dropdown Menu */}
+                      <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border rounded-md shadow-lg">
+                        <div className="p-1">
+                          <button
+                            onClick={() => {
+                              setSelectedChallengeForExport('all');
+                              setIsChallengeDropdownOpen(false);
+                            }}
+                            className={`w-full flex items-center px-2 py-1.5 text-sm hover:bg-muted transition-colors rounded-sm text-left ${
+                              selectedChallengeForExport === 'all' ? 'bg-muted' : ''
+                            }`}
+                          >
+                            All Challenges
+                          </button>
+                          {challenges.map((challenge) => (
+                            <button
+                              key={challenge.id}
+                              onClick={() => {
+                                setSelectedChallengeForExport(challenge.id);
+                                setIsChallengeDropdownOpen(false);
+                              }}
+                              className={`w-full flex items-center px-2 py-1.5 text-sm hover:bg-muted transition-colors rounded-sm text-left ${
+                                selectedChallengeForExport === challenge.id ? 'bg-muted' : ''
+                              }`}
+                            >
+                              {challenge.title}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   {selectedChallengeForExport === 'all' 
                     ? 'Export all challenges with all associated data including motivational statements.'

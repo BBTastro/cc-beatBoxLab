@@ -27,7 +27,7 @@ stepBox is a comprehensive goal tracking application featuring:
 
 ### Key Pages
 - `/` - Landing/dashboard with challenge overview
-- `/beats` - Main tracking interface with AI assistant
+- `/steps` - Main tracking interface with AI assistant
 - `/rewards` - Achievement reward management
 - `/motivation` - Personal motivational statements
 - `/allies` - Support network organization  

@@ -39,12 +39,12 @@ function ContactForm() {
 
   if (isSubmitted) {
     return (
-      <Card>
-        <CardContent className="pt-6 text-center space-y-4">
+      <Card className="w-full max-w-md">
+        <CardContent className="p-8 text-center space-y-4">
           <CheckCircle className="h-12 w-12 text-green-600 mx-auto" />
           <div>
             <h3 className="text-lg font-medium text-green-600">Message Sent!</h3>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Thank you for your message. We'll get back to you soon.
             </p>
           </div>
@@ -54,66 +54,90 @@ function ContactForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Mail className="h-5 w-5" />
-          Get in Touch
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="name">Name *</Label>
+    <Card className="w-full max-w-md">
+      <CardContent className="p-8">
+        <div className="space-y-6">
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-semibold">Get in Touch</h2>
+            <p className="text-sm text-muted-foreground">
+              Have questions or feedback? We'd love to hear from you.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Name Field */}
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">
+                Name
+              </Label>
               <Input
                 id="name"
+                type="text"
+                placeholder="Your Name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Your name"
                 required
+                className="w-full"
               />
             </div>
-            <div>
-              <Label htmlFor="email">Email *</Label>
+
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
+                placeholder="you@example.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="your@email.com"
+                required
+                className="w-full"
+              />
+            </div>
+
+            {/* Subject Field */}
+            <div className="space-y-2">
+              <Label htmlFor="subject" className="text-sm font-medium">
+                Subject
+              </Label>
+              <Input
+                id="subject"
+                type="text"
+                placeholder="What's this about?"
+                value={formData.subject}
+                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                className="w-full"
+              />
+            </div>
+
+            {/* Message Field */}
+            <div className="space-y-2">
+              <Label htmlFor="message" className="text-sm font-medium">
+                Message
+              </Label>
+              <Textarea
+                id="message"
+                placeholder="Tell us what's on your mind..."
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                className="min-h-[120px] w-full resize-y"
                 required
               />
             </div>
-          </div>
 
-          <div>
-            <Label htmlFor="subject">Subject</Label>
-            <Input
-              id="subject"
-              value={formData.subject}
-              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-              placeholder="What's this about?"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="message">Message *</Label>
-            <Textarea
-              id="message"
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              placeholder="Tell us what's on your mind..."
-              className="min-h-[120px]"
-              required
-            />
-          </div>
-
-          <Button type="submit" className="w-full">
-            <Send className="h-4 w-4 mr-2" />
-            Send Message
-          </Button>
-        </form>
+            {/* Submit Button */}
+            <Button 
+              type="submit" 
+              className="w-full mt-6"
+              disabled={!formData.name || !formData.email || !formData.message}
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Send Message
+            </Button>
+          </form>
+        </div>
       </CardContent>
     </Card>
   );
@@ -121,25 +145,63 @@ function ContactForm() {
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Main Content - Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Description - 1/3 of row */}
-          <div className="lg:col-span-1">
-            <div className="prose prose-sm max-w-none">
-              <p className="text-lg leading-relaxed">
-                <strong>stepBox</strong> helps creators show up daily for one big goal.
-                A grid turns daily work into visible momentum across tabs.
-                Tap a day, log what you did, keep your streak, and{" "}
-                <span className="rainbow-gradient">celebrate milestones</span> on the way to meet your goals!
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Dieter Herman inspired fade background */}
+      <div className="absolute right-0 top-0 w-1/3 h-full opacity-10">
+        <div className="w-full h-full bg-gradient-to-br from-[#6D7B56] to-[#5A6B47] rounded-l-full blur-3xl"></div>
+      </div>
+      
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start min-h-[80vh]">
+            {/* Left Section - Description */}
+            <div className="space-y-8">
+              {/* Title and Description */}
+              <div className="space-y-4">
+                <h1 className="text-4xl font-bold">About stepBox</h1>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  <strong>stepBox</strong> helps creators show up daily for one big goal.
+                  A grid turns daily work into visible momentum across tabs.
+                  Tap a day, log what you did, keep your streak, and{" "}
+                  <span className="inline-block animate-pulse bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+                    celebrate milestones
+                  </span>{" "}
+                  on the way to meet your goals!
+                </p>
+              </div>
 
-          {/* Contact Form - 2/3 of row */}
-          <div className="lg:col-span-2">
-            <ContactForm />
+              {/* Additional Info */}
+              <div className="space-y-4">
+                <h2 className="text-2xl font-semibold">Why stepBox?</h2>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-muted-foreground">
+                      Visual progress tracking that turns daily work into visible momentum
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-muted-foreground">
+                      Simple interface for logging daily achievements and maintaining streaks
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-muted-foreground">
+                      Built for creators who want to show up consistently for their big goals
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Section - Contact Form */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="w-full max-w-md">
+                <ContactForm />
+              </div>
+            </div>
           </div>
         </div>
       </div>

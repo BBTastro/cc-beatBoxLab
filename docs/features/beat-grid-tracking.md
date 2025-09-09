@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Beat Grid Tracking feature is the core visual tracking system of stepBox, allowing users to monitor their daily progress through an intuitive grid interface. Users can track their daily achievements by completing "beats" - individual days in their challenge that can be marked complete by adding details about their activities.
+The Beat Grid Tracking feature is the core visual tracking system of stepBox, allowing users to monitor their daily progress through an intuitive grid interface. Users can track their daily achievements by completing "beats" - individual days in their challenge that can be marked complete by adding details about their activities. This feature forms the foundation of the goal tracking experience with phase-based organization for challenges up to 91 days per phase.
 
 ## What is Beat Grid Tracking
 

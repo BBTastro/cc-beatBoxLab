@@ -2,7 +2,7 @@
 
 ## Overview
 
-The User Authentication feature provides secure, streamlined access control using Better Auth with Google OAuth integration. Users can sign in with their Google accounts for seamless access while maintaining complete data privacy and security across all stepBox features including beats, rewards, motivational statements, and allies network.
+The User Authentication feature provides secure, streamlined access control using Better Auth with Google OAuth integration. Users can sign in with their Google accounts for seamless access while maintaining complete data privacy and security across all stepBox features including beat grid tracking, AI chatbot, rewards system, motivational statements, allies network, and move system.
 
 ## What is User Authentication
 

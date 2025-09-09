@@ -2,7 +2,7 @@
 
 ## Overview
 
-The AI Chatbot feature provides intelligent, personalized assistance throughout the user's goal achievement journey. Powered by OpenAI integration, the chatbot offers contextual support, progress insights, and motivational guidance based on the user's specific challenge data, beat completion history, rewards status, and personal motivational statements.
+The AI Chatbot feature provides intelligent, personalized assistance throughout the user's goal achievement journey. Powered by OpenAI integration with GPT models, the chatbot offers contextual support, progress insights, and motivational guidance based on the user's specific challenge data, beat completion history, rewards status, and personal motivational statements. The AI assistant is seamlessly integrated throughout the application interface.
 
 ## What is the AI Chatbot
 
@@ -75,7 +75,7 @@ Goal achievers need:
 
 ### Supporting Features
 
-- **OpenAI Integration**: GPT-powered conversational AI with context awareness
+- **OpenAI Integration**: GPT-powered conversational AI with context awareness (using gpt-5-mini model)
 - **Challenge Data Access**: Real-time integration with user's beats, beat details, rewards, and motivational statements
 - **Rich Message Formatting**: Support for structured content, lists, and headers
 - **Conversation History**: Persistent chat sessions with message history

@@ -10,7 +10,7 @@
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "*"
+          "value": "https://stepbox.app.creativecontext.studio"
         },
         {
           "key": "Access-Control-Allow-Methods",
@@ -18,7 +18,11 @@
         },
         {
           "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
+          "value": "Content-Type, Authorization, Cookie"
+        },
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
         }
       ]
     }

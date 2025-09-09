@@ -221,76 +221,101 @@ export function AdminUserList({ isAdmin }: AdminUserListProps) {
             </div>
 
             {/* Users Table */}
-            <div className="border rounded-lg">
+            <div className="border rounded-lg bg-card">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Sign-up Date</TableHead>
-                    <TableHead>Sessions</TableHead>
-                    <TableHead>Last Sign-in</TableHead>
-                    <TableHead>Activity</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                  <TableRow className="hover:bg-transparent border-b">
+                    <TableHead className="font-semibold text-foreground">User Details</TableHead>
+                    <TableHead className="font-semibold text-foreground">Registration</TableHead>
+                    <TableHead className="font-semibold text-foreground text-center">Sessions</TableHead>
+                    <TableHead className="font-semibold text-foreground">Last Activity</TableHead>
+                    <TableHead className="font-semibold text-foreground text-center">Status</TableHead>
+                    <TableHead className="font-semibold text-foreground text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
+                    <TableRow key={user.id} className="hover:bg-muted/50 transition-colors">
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-10 w-10 ring-2 ring-muted">
                             <AvatarImage src={user.image || ""} alt={user.name} />
-                            <AvatarFallback>
+                            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                               {user.name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
-                          <div>
-                            <p className="font-medium">{user.name}</p>
-                            <p className="text-sm text-muted-foreground">{user.email}</p>
+                          <div className="space-y-1">
+                            <p className="font-semibold text-foreground leading-none">{user.name}</p>
+                            <p className="text-sm text-muted-foreground font-mono">{user.email}</p>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <p>{format(new Date(user.createdAt), 'MMM dd, yyyy')}</p>
-                          <p className="text-muted-foreground">
+                      <TableCell className="py-4">
+                        <div className="space-y-1">
+                          <p className="font-medium text-foreground">
+                            {format(new Date(user.createdAt), 'MMM dd, yyyy')}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
                             {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}
                           </p>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">
-                          {user.totalSessions} sessions
-                        </Badge>
+                      <TableCell className="py-4 text-center">
+                        <div className="space-y-1">
+                          <div className="font-bold text-xl text-foreground">
+                            {user.totalSessions}
+                          </div>
+                          <Badge variant="secondary" className="text-xs">
+                            sessions
+                          </Badge>
+                        </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="py-4">
                         {user.lastSignIn ? (
-                          <div className="text-sm">
-                            <p>{format(new Date(user.lastSignIn), 'MMM dd, yyyy')}</p>
-                            <p className="text-muted-foreground">
+                          <div className="space-y-1">
+                            <p className="font-medium text-foreground">
+                              {format(new Date(user.lastSignIn), 'MMM dd, yyyy')}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
                               {formatDistanceToNow(new Date(user.lastSignIn), { addSuffix: true })}
                             </p>
+                            <div className="flex items-center gap-1 mt-1">
+                              <Badge variant="outline" className="text-xs">
+                                {user.totalActivity} actions
+                              </Badge>
+                            </div>
                           </div>
                         ) : (
-                          <span className="text-muted-foreground">Never</span>
+                          <div className="space-y-1">
+                            <p className="font-medium text-muted-foreground">Never signed in</p>
+                            <Badge variant="outline" className="text-xs">
+                              {user.totalActivity} actions
+                            </Badge>
+                          </div>
                         )}
                       </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {user.totalActivity} actions
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
+                      <TableCell className="py-4 text-center">
                         {user.lastSignIn && new Date(user.lastSignIn) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) ? (
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
+                          <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400 font-medium">
+                            <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                            Active
+                          </Badge>
+                        ) : user.lastSignIn && new Date(user.lastSignIn) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
+                          <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400 font-medium">
+                            <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>
+                            Recent
+                          </Badge>
                         ) : (
-                          <Badge variant="secondary">Inactive</Badge>
+                          <Badge variant="secondary" className="font-medium">
+                            <div className="w-2 h-2 bg-muted-foreground rounded-full mr-2"></div>
+                            Inactive
+                          </Badge>
                         )}
                       </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
+                      <TableCell className="py-4 text-center">
+                        <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
                         </Button>
                       </TableCell>
                     </TableRow>

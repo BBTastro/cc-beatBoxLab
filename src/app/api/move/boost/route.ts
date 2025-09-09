@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
-import { getChallengeData } from '@/lib/challenge-data';
+import { getChallengeData, getChallengeInfo, getBeatsProgress, getBeatDetails, getRewards } from '@/lib/challenge-data';
 import { generateText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 
@@ -11,13 +11,21 @@ export async function POST(req: NextRequest) {
   try {
     console.log('Move Boost API called');
     
-    const { promptContext, moveType, moveTitle }: { 
+    const { promptContext, moveType, moveTitle, moveContent, moveAiBoostContent }: { 
       promptContext?: string; 
       moveType?: string; 
-      moveTitle?: string; 
+      moveTitle?: string;
+      moveContent?: string;
+      moveAiBoostContent?: string;
     } = await req.json();
     
-    console.log('Move Boost request:', { promptContext, moveType, moveTitle });
+    console.log('Move Boost request:', { 
+      promptContext, 
+      moveType, 
+      moveTitle, 
+      hasMoveContent: !!moveContent,
+      hasMoveAiBoostContent: !!moveAiBoostContent
+    });
     
     // Get user session
     const session = await auth.api.getSession({
@@ -49,92 +57,95 @@ export async function POST(req: NextRequest) {
     
     console.log('Using OpenAI model:', process.env.OPENAI_MODEL || "gpt-4o-mini");
 
-    // Fetch user's challenge data
+    // Fetch user's challenge data using the same pattern as chatbot
     let challengeData = '';
     
     try {
-      const data = await getChallengeData(userId);
-      console.log('Challenge data fetched:', {
-        hasChallenge: !!data.challenge,
-        beatsCount: data.beats.length,
-        beatDetailsCount: data.beatDetails.length,
-        rewardsCount: data.rewards.length,
-        statementsCount: data.motivationalStatements.length
-      });
-
-      if (data.challenge) {
-        // Calculate progress
-        const totalBeats = data.beats.length;
-        const completedBeats = data.beats.filter(beat => beat.isCompleted).length;
-        const progressPercentage = totalBeats > 0 ? Math.round((completedBeats / totalBeats) * 100) : 0;
-
-        // Format beat details with tags and dates
-        const recentBeatDetails = data.beatDetails.slice(0, 10).map(detail => {
-          const correspondingBeat = data.beats.find(beat => beat.id === detail.beatId);
-          let dateDisplay = 'No date';
-          
-          if (correspondingBeat) {
-            const assignedDate = new Date(correspondingBeat.date).toLocaleDateString();
-            const dayNumber = correspondingBeat.dayNumber;
-            dateDisplay = `Day ${dayNumber} (${assignedDate})`;
-          } else if (detail.createdAt) {
-            dateDisplay = detail.createdAt.toLocaleDateString();
-          }
-          
-          const tag = detail.category || 'untagged';
-          return `- [${tag.toUpperCase()}] ${detail.content} (${dateDisplay})`;
-        });
-
-        // Create tag summary
-        const tagCounts: { [key: string]: number } = {};
-        data.beatDetails.forEach(detail => {
-          const tag = detail.category || 'untagged';
-          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+      console.log('Fetching challenge data from database...');
+      const challengeInfo = await getChallengeInfo(userId);
+      console.log('Challenge info result:', challengeInfo);
+      
+      const progress = await getBeatsProgress(userId);
+      console.log('Progress result:', progress);
+      
+      const beatDetails = await getBeatDetails(userId);
+      console.log('Beat details count:', beatDetails?.length || 0);
+      
+      // Get beats data for proper date display
+      const challengeDataFromDb = await getChallengeData(userId);
+      const beats = challengeDataFromDb.beats || [];
+      console.log('Beats count:', beats.length);
+      
+      const rewards = await getRewards(userId);
+      console.log('Rewards result:', rewards);
+      
+      if (challengeInfo && !challengeInfo.error) {
+        console.log('Successfully fetched challenge data:', {
+          title: challengeInfo.title,
+          progress: challengeInfo.progress,
+          rewards: rewards,
+          beatDetailsCount: beatDetails?.length || 0
         });
         
-        const tagSummary = Object.entries(tagCounts)
-          .sort(([,a], [,b]) => b - a)
-          .map(([tag, count]) => `- ${tag}: ${count} entries`)
-          .join('\n');
-
-        // Format rewards
-        const totalRewards = data.rewards.length;
-        const achievedRewards = data.rewards.filter(reward => reward.status === 'achieved').length;
-        const plannedRewards = data.rewards.filter(reward => reward.status === 'planned').length;
-        const activeRewards = data.rewards.filter(reward => reward.status === 'active').length;
-
-        // Format motivational statements
-        const motivationalStatements = data.motivationalStatements.map(stmt => 
-          `- ${stmt.title}: ${stmt.statement}`
-        ).join('\n');
-
         challengeData = `
 USER'S CURRENT CHALLENGE DATA:
-- Challenge: ${data.challenge.title}
-- Description: ${data.challenge.description || 'No description'}
-- Duration: ${data.challenge.duration} days
-- Status: ${data.challenge.status}
-- Progress: ${completedBeats}/${totalBeats} days (${progressPercentage}% complete)
-- Start Date: ${new Date(data.challenge.startDate).toLocaleDateString()}
-- End Date: ${new Date(data.challenge.endDate).toLocaleDateString()}
+- Challenge: ${challengeInfo.title}
+- Description: ${challengeInfo.description || 'No description'}
+- Duration: ${challengeInfo.duration} days
+- Status: ${challengeInfo.status}
+- Progress: ${challengeInfo.progress?.completed || 0}/${challengeInfo.progress?.total || 0} days (${challengeInfo.progress?.percentage || 0}% complete)
+- Start Date: ${challengeInfo.startDate}
+- End Date: ${challengeInfo.endDate}
+
+PROGRESS DETAILS:
+- Current Phase: ${progress.currentPhase || 'N/A'}
+- Phase Progress: ${progress.phaseProgress || 0}/${progress.daysPerPhase || 0}
+- Completion Rate: ${progress.completionRate || 0}%
 
 RECENT BEAT DETAILS WITH TAGS (last 10 entries):
-${recentBeatDetails.join('\n')}
+${(beatDetails || []).slice(0, 10).map(detail => {
+  const tag = detail.category || 'untagged';
+  const content = detail.content;
+  
+  // Find the corresponding beat to get the assigned date
+  const correspondingBeat = (beats || []).find(beat => beat.id === detail.beatId);
+  let dateDisplay = 'No date';
+  
+  if (correspondingBeat) {
+    // Use the beat's assigned date and day number
+    const assignedDate = new Date(correspondingBeat.date).toLocaleDateString();
+    const dayNumber = correspondingBeat.dayNumber;
+    dateDisplay = `Day ${dayNumber} (${assignedDate})`;
+  } else if (detail.createdAt) {
+    // Fallback to creation date if beat not found
+    dateDisplay = detail.createdAt.toLocaleDateString();
+  }
+  
+  return `- [${tag.toUpperCase()}] ${content} (${dateDisplay})`;
+}).join('\n')}
 
 TAG SUMMARY:
-${tagSummary}
+${(() => {
+  const tagCounts: { [key: string]: number } = {};
+  (beatDetails || []).forEach(detail => {
+    const tag = detail.category || 'untagged';
+    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+  });
+  return Object.entries(tagCounts)
+    .sort(([,a], [,b]) => b - a)
+    .map(([tag, count]) => `- ${tag}: ${count} entries`)
+    .join('\n');
+})()}
 
 REWARDS:
-- Total: ${totalRewards}
-- Achieved: ${achievedRewards}
-- Planned: ${plannedRewards}
-- Active: ${activeRewards}
-
-MOTIVATIONAL STATEMENTS:
-${motivationalStatements || 'No motivational statements'}
+- Total: ${rewards.total}
+- Achieved: ${rewards.achieved}
+- Planned: ${rewards.planned}
+- Active: ${rewards.active}
         `.trim();
       } else {
-        challengeData = '\nUSER HAS NO ACTIVE CHALLENGE DATA.';
+        console.log('No challenge data found for user');
+        challengeData = '\nUSER HAS NO ACTIVE CHALLENGE DATA. Please encourage them to create their first challenge to start tracking their progress.';
       }
     } catch (error) {
       console.error('Error fetching challenge data:', error);
@@ -153,17 +164,24 @@ RESPONSE REQUIREMENTS:
 - Address their specific context and concerns from the prompt
 - Use an encouraging, supportive tone
 - Focus on actionable motivation rather than generic advice
+- Incorporate the specific Move concept principles into your response
 
-MOVE TYPE CONTEXT:
+MOVE CONCEPT DETAILS:
 - Move Type: ${moveType || 'general'} (${moveTitle || 'Move'})
-- This boost should align with the ${moveType || 'general'} movement principles
+- Description: ${moveTitle ? 'Focus on this specific movement approach' : 'General motivation'}
+
+${moveContent ? `MOVE CONCEPT PRINCIPLES:
+${moveContent}
+
+${moveAiBoostContent ? `AI BOOST GUIDANCE:
+${moveAiBoostContent}` : ''}` : ''}
 
 ${challengeData}
 
 USER'S ADDITIONAL CONTEXT:
 ${promptContext || 'No additional context provided'}
 
-Generate a personalized motivational boost that helps this user stay motivated and focused on their goal achievement journey.`;
+Generate a personalized motivational boost that helps this user stay motivated and focused on their goal achievement journey. The boost should incorporate the specific Move concept principles and be tailored to their current challenge data and personal context.`;
 
     console.log('Generating boost with system prompt length:', systemPrompt.length);
 

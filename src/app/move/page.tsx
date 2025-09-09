@@ -302,7 +302,9 @@ function MoveDetailDialog({ card, isOpen, onClose }: MoveDetailDialogProps) {
         body: JSON.stringify({
           promptContext: boostInput,
           moveType: card?.type,
-          moveTitle: card?.title
+          moveTitle: card?.title,
+          moveContent: card?.content,
+          moveAiBoostContent: card?.aiBoostContent
         })
       });
       

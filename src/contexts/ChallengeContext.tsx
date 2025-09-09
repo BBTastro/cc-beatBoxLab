@@ -311,6 +311,88 @@ export function ChallengeProvider({ children, userId }: ChallengeProviderProps) 
     }
   }, [challenges, userId]);
 
+  // Helper function that accepts challenges array as parameter to avoid race conditions
+  const loadChallengeDataWithChallenges = useCallback(async (challengeId: string, challengesArray: Challenge[]) => {
+    try {
+      let challenge = challengesArray.find(c => c.id === challengeId);
+      
+      // If not found in provided array, try to load from storage
+      if (!challenge) {
+        const storedChallenges = localStorage.getItem(STORAGE_KEYS.CHALLENGES(userId));
+        if (storedChallenges) {
+          const parsedChallenges = JSON.parse(storedChallenges) as StoredChallenge[];
+          const storedChallenge = parsedChallenges.find(c => c.id === challengeId);
+          if (storedChallenge) {
+            challenge = {
+              ...storedChallenge,
+              startDate: new Date(storedChallenge.startDate), // Parse the ISO string directly
+              endDate: new Date(storedChallenge.endDate), // Parse the ISO string directly
+              createdAt: new Date(storedChallenge.createdAt),
+              updatedAt: new Date(storedChallenge.updatedAt),
+            };
+          }
+        }
+      }
+      
+      if (!challenge) return;
+
+      // Load beats
+      const beatsStored = localStorage.getItem(STORAGE_KEYS.BEATS(userId, challengeId));
+      let challengeBeats: Beat[] = [];
+      if (beatsStored) {
+        const parsedBeats = JSON.parse(beatsStored) as StoredBeat[];
+        challengeBeats = parsedBeats.map(b => ({
+          ...b,
+          date: new Date(b.date), // Parse the ISO string directly
+          completedAt: b.completedAt ? new Date(b.completedAt) : undefined,
+          createdAt: new Date(b.createdAt),
+          updatedAt: new Date(b.updatedAt),
+        }));
+      } else {
+        // Generate beats for the challenge if they don't exist
+        challengeBeats = generateBeatsForChallenge(challenge);
+        await saveBeats(challengeId, challengeBeats);
+      }
+      setBeats(challengeBeats);
+
+      // Load beat details
+      const detailsStored = localStorage.getItem(STORAGE_KEYS.BEAT_DETAILS(userId, challengeId));
+      let challengeBeatDetails: BeatDetail[] = [];
+      if (detailsStored) {
+        const parsedDetails = JSON.parse(detailsStored) as StoredBeatDetail[];
+        challengeBeatDetails = parsedDetails.map(d => ({
+          ...d,
+          createdAt: new Date(d.createdAt),
+          updatedAt: new Date(d.updatedAt),
+        }));
+        setBeatDetails(challengeBeatDetails);
+      } else {
+        // Initialize empty beat details for this challenge
+        setBeatDetails([]);
+      }
+
+      // Load rewards
+      const rewardsStored = localStorage.getItem(STORAGE_KEYS.REWARDS(userId, challengeId));
+      let challengeRewards: Reward[] = [];
+      if (rewardsStored) {
+        const parsedRewards = JSON.parse(rewardsStored) as StoredReward[];
+        challengeRewards = parsedRewards.map(r => ({
+          ...r,
+          achievedAt: r.achievedAt ? new Date(r.achievedAt) : undefined,
+          createdAt: new Date(r.createdAt),
+          updatedAt: new Date(r.updatedAt),
+        }));
+        setRewards(challengeRewards);
+      }
+
+      // Create challenge with stats  
+      const stats = calculateChallengeStats(challenge, challengeBeats, challengeRewards, challengeBeatDetails);
+      setCurrentChallenge(stats);
+    } catch (error) {
+      console.error('Error loading challenge data with challenges array:', error);
+    }
+  }, [userId]);
+
   // Generate beats for a new challenge
   const generateBeatsForChallenge = (challenge: Challenge): Beat[] => {
     const beats: Beat[] = [];
@@ -481,7 +563,17 @@ export function ChallengeProvider({ children, userId }: ChallengeProviderProps) 
       console.log('Found active challenge:', activeChallenge?.id, activeChallenge?.title);
       if (activeChallenge) {
         console.log('Loading data for active challenge:', activeChallenge.id);
-        await loadChallengeData(activeChallenge.id);
+        // Use the updated challenges array directly to avoid race conditions
+        await loadChallengeDataWithChallenges(activeChallenge.id, updatedChallenges);
+      }
+      
+      // Automatically sync to database when challenge becomes active
+      try {
+        console.log('Auto-syncing to database after challenge status change to active...');
+        await syncToDatabase();
+      } catch (error) {
+        console.error('Error auto-syncing to database:', error);
+        // Don't throw - this is a background sync operation
       }
     }
     
@@ -558,11 +650,21 @@ export function ChallengeProvider({ children, userId }: ChallengeProviderProps) 
     // Set as default challenge
     localStorage.setItem(STORAGE_KEYS.DEFAULT_CHALLENGE(userId), challengeId);
     
-    // Load the new active challenge data
+    // Load the new active challenge data using the updated challenges array
     const activeChallenge = updatedChallenges.find(c => c.status === 'active');
     if (activeChallenge) {
       console.log('setChallengeActive - loading data for active challenge:', activeChallenge.id);
-      await loadChallengeData(activeChallenge.id);
+      // Use the updated challenges array directly instead of relying on state
+      await loadChallengeDataWithChallenges(activeChallenge.id, updatedChallenges);
+    }
+    
+    // Automatically sync to database when active challenge changes
+    try {
+      console.log('Auto-syncing to database after active challenge change...');
+      await syncToDatabase();
+    } catch (error) {
+      console.error('Error auto-syncing to database:', error);
+      // Don't throw - this is a background sync operation
     }
     
     emitEvent('challenge-updated');
@@ -572,7 +674,7 @@ export function ChallengeProvider({ children, userId }: ChallengeProviderProps) 
     try {
       console.log('Syncing challenge data to database...');
       
-      // Get all data from localStorage
+      // Get all data from localStorage - ensure we have the latest data
       const allChallenges = challenges;
       const allBeats = beats;
       const allBeatDetails = beatDetails;
@@ -581,6 +683,13 @@ export function ChallengeProvider({ children, userId }: ChallengeProviderProps) 
       // Get motivational statements from localStorage
       const statementsStored = localStorage.getItem(STORAGE_KEYS.STATEMENTS(userId));
       const allMotivationalStatements = statementsStored ? JSON.parse(statementsStored) : [];
+
+      console.log('Syncing challenges:', allChallenges.map(c => ({
+        id: c.id,
+        title: c.title,
+        status: c.status,
+        isDefault: c.isDefault
+      })));
 
       // Send to sync API
       const response = await fetch('/api/sync', {

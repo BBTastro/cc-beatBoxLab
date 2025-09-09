@@ -77,7 +77,7 @@ Goal pursuers struggle with:
 - **Inline Editing Mode**: Direct modification of statements without separate dialogs
 - **Three-Section Structure**: Organized content areas for different aspects of motivation
 - **Timestamp Management**: Automatic tracking of creation and modification dates
-- **CRUD Operations**: Full create, read, update, delete functionality
+- **Complete Management**: Full create, read, update, delete functionality
 - **Rich Text Support**: Multi-line text areas with formatting preservation
 - **Responsive Layout**: Card-based design adapting to different screen sizes
 
@@ -100,7 +100,7 @@ Goal pursuers struggle with:
 
 ## Testing Strategy
 
-- **CRUD Operations**: Validate all create, read, update, delete functionality
+- **Data Management**: Validate all create, read, update, delete functionality
 - **Inline Editing**: Test save/cancel behavior and data persistence
 - **Text Handling**: Verify proper handling of multi-line and formatted text
 - **Responsive Layout**: Test card layouts across different screen sizes

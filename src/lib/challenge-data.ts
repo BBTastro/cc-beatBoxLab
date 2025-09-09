@@ -14,7 +14,7 @@ import {
 } from './types';
 import { db } from './db';
 import { challenges, beats, beatDetails, rewards, motivationalStatements } from './schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and, or, isNull } from 'drizzle-orm';
 
 // Note: These functions are designed to work in a server environment
 // In a real implementation, you'd want to use a proper database
@@ -24,14 +24,40 @@ export async function getChallengeData(userId: string) {
   try {
     console.log('Getting challenge data for userId:', userId);
     
-    // Get the user's default challenge
-    const userChallenges = await db
+    // Get all user challenges first, then sort them properly
+    const allUserChallenges = await db
       .select()
       .from(challenges)
       .where(eq(challenges.userId, userId))
-      .orderBy(desc(challenges.isDefault), desc(challenges.createdAt));
+      .orderBy(desc(challenges.createdAt)); // Get all challenges, newest first
+    
+    // Sort challenges with proper priority: active > default > newest
+    // This matches the frontend ChallengeContext logic for consistency
+    const userChallenges = allUserChallenges.sort((a, b) => {
+      // First priority: active challenges (matches frontend: challenges.find(c => c.status === 'active'))
+      if (a.status === 'active' && b.status !== 'active') return -1;
+      if (b.status === 'active' && a.status !== 'active') return 1;
+      
+      // Second priority: default challenges (matches frontend: challenges.find(c => c.isDefault))
+      if (a.isDefault && !b.isDefault) return -1;
+      if (b.isDefault && !a.isDefault) return 1;
+      
+      // Third priority: newest challenges (matches frontend: challenges[0])
+      return 0;
+    });
 
     console.log('Found challenges:', userChallenges.length);
+    
+    // Log all challenges for debugging
+    userChallenges.forEach((challenge, index) => {
+      console.log(`Challenge ${index + 1}:`, {
+        id: challenge.id,
+        title: challenge.title,
+        status: challenge.status,
+        isDefault: challenge.isDefault,
+        createdAt: challenge.createdAt
+      });
+    });
 
     if (userChallenges.length === 0) {
       console.log('No challenges found for user');
@@ -45,6 +71,12 @@ export async function getChallengeData(userId: string) {
     }
 
     const challenge = userChallenges[0];
+    console.log('Selected challenge:', {
+      id: challenge.id,
+      title: challenge.title,
+      status: challenge.status,
+      isDefault: challenge.isDefault
+    });
 
     // Get beats for this challenge
     const userBeats = await db
@@ -68,11 +100,16 @@ export async function getChallengeData(userId: string) {
       .where(eq(rewards.challengeId, challenge.id))
       .orderBy(desc(rewards.createdAt));
 
-    // Get motivational statements for this user
+    // Get motivational statements for this user, filtered by the active challenge
     const userMotivationalStatements = await db
       .select()
       .from(motivationalStatements)
-      .where(eq(motivationalStatements.userId, userId))
+      .where(
+        and(
+          eq(motivationalStatements.userId, userId),
+          eq(motivationalStatements.challengeId, challenge.id)
+        )
+      )
       .orderBy(desc(motivationalStatements.createdAt));
 
     return {

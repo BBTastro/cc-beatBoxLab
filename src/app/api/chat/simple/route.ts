@@ -87,7 +87,7 @@ RECENT BEAT DETAILS (last 10 entries):
 ${beatDetails.slice(0, 10).map((detail: any) => `- ${detail.content} (${detail.category || 'no category'}) - ${detail.createdAt || 'No date'}`).join('\n')}
 
 REWARDS EARNED:
-${rewards.slice(0, 5).map((reward: any) => `- ${reward.name}: ${reward.description} (${reward.points} points)`).join('\n')}
+${rewards.slice(0, 5).map((reward: any) => `- ${reward.name}: ${reward.description}`).join('\n')}
       `.trim();
     } else {
       console.log('No challenge data from frontend, fetching from database...');

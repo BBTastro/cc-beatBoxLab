@@ -121,6 +121,8 @@ export const motivationalStatements = pgTable("motivationalStatements", {
   userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+  challengeId: text("challengeId")
+    .references(() => challenges.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   statement: text("statement").notNull(),
   why: text("why"), // reasoning behind the statement

@@ -15,6 +15,13 @@
       "when": 1757376122801,
       "tag": "0001_moaning_wasp",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757445004459,
+      "tag": "0002_superb_next_avengers",
+      "breakpoints": true
     }
   ]
 }

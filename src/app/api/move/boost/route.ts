@@ -1,22 +1,30 @@
 import { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
-import { getChallengeData, getChallengeInfo, getBeatsProgress, getBeatDetails, getRewards } from '@/lib/challenge-data';
+import { getChallengeData, getChallengeInfo, getBeatsProgress, getBeatDetails, getRewards, getMotivationalStatements } from '@/lib/challenge-data';
 import { generateText } from 'ai';
 import { openai } from '@ai-sdk/openai';
+import { db } from '@/lib/db';
+import { challenges } from '@/lib/schema';
+import { eq, desc } from 'drizzle-orm';
 
 // Allow responses up to 30 seconds
 export const maxDuration = 30;
+
+// Add runtime configuration for Vercel
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
     console.log('Move Boost API called');
     
-    const { promptContext, moveType, moveTitle, moveContent, moveAiBoostContent }: { 
+    const { promptContext, moveType, moveTitle, moveContent, moveAiBoostContent, currentChallengeData }: { 
       promptContext?: string; 
       moveType?: string; 
       moveTitle?: string;
       moveContent?: string;
       moveAiBoostContent?: string;
+      currentChallengeData?: any;
     } = await req.json();
     
     console.log('Move Boost request:', { 
@@ -59,92 +67,185 @@ export async function POST(req: NextRequest) {
 
     // Fetch user's challenge data using the same pattern as chatbot
     let challengeData = '';
+    let challengeInfo: any = null;
     
     try {
       console.log('Fetching challenge data from database...');
-      const challengeInfo = await getChallengeInfo(userId);
+      
+      // First, try to get the current challenge data
+      challengeInfo = await getChallengeInfo(userId);
       console.log('Challenge info result:', challengeInfo);
       
-      const progress = await getBeatsProgress(userId);
-      console.log('Progress result:', progress);
+      // If no challenge found or challenge seems outdated, log detailed info for debugging
+      if (!challengeInfo || challengeInfo.error) {
+        console.log('No challenge found in database, checking all user challenges...');
+        const allChallenges = await db
+          .select()
+          .from(challenges)
+          .where(eq(challenges.userId, userId))
+          .orderBy(desc(challenges.createdAt));
+        
+        console.log('All challenges in database for user:', allChallenges.map(c => ({
+          id: c.id,
+          title: c.title,
+          status: c.status,
+          isDefault: c.isDefault,
+          createdAt: c.createdAt
+        })));
+        
+        // If we have challenges but none are marked as active, use the most recent one
+        if (allChallenges.length > 0) {
+          console.log('No active challenge found, using most recent challenge as fallback');
+          const mostRecentChallenge = allChallenges[0];
+          
+          // Get progress data for the fallback challenge
+          const fallbackChallengeData = await getChallengeData(userId);
+          const fallbackProgress = await getBeatsProgress(userId);
+          
+          challengeInfo = {
+            title: mostRecentChallenge.title,
+            description: mostRecentChallenge.description,
+            duration: mostRecentChallenge.duration,
+            status: mostRecentChallenge.status,
+            startDate: mostRecentChallenge.startDate,
+            endDate: mostRecentChallenge.endDate,
+            progress: {
+              completed: fallbackProgress.completedBeats || 0,
+              total: fallbackProgress.totalBeats || mostRecentChallenge.duration,
+              percentage: fallbackProgress.completionRate || 0
+            }
+          };
+          console.log('Using fallback challenge:', challengeInfo.title, 'with progress:', challengeInfo.progress);
+        } else {
+          console.log('No challenges found in database at all');
+          
+          // Use direct challenge data from frontend as final fallback
+          if (currentChallengeData && currentChallengeData.challenge) {
+            console.log('Using direct challenge data from frontend as fallback');
+            const frontendChallenge = currentChallengeData.challenge;
+            challengeInfo = {
+              title: frontendChallenge.title,
+              description: frontendChallenge.description,
+              duration: frontendChallenge.duration,
+              status: frontendChallenge.status,
+              startDate: frontendChallenge.startDate,
+              endDate: frontendChallenge.endDate,
+              progress: {
+                completed: frontendChallenge.completedBeats || 0,
+                total: frontendChallenge.totalBeats || frontendChallenge.duration,
+                percentage: frontendChallenge.completedBeats && frontendChallenge.totalBeats 
+                  ? Math.round((frontendChallenge.completedBeats / frontendChallenge.totalBeats) * 100)
+                  : 0
+              }
+            };
+            console.log('Using frontend challenge:', challengeInfo.title, 'with progress:', challengeInfo.progress);
+          }
+        }
+      } else {
+        console.log('Found challenge in database:', {
+          title: challengeInfo.title,
+          status: challengeInfo.status,
+          progress: challengeInfo.progress
+        });
+      }
       
-      const beatDetails = await getBeatDetails(userId);
-      console.log('Beat details count:', beatDetails?.length || 0);
+      // Use frontend data if available, otherwise get from database
+      let progress, beatDetails, beats, rewards, motivationalStatements;
       
-      // Get beats data for proper date display
-      const challengeDataFromDb = await getChallengeData(userId);
-      const beats = challengeDataFromDb.beats || [];
-      console.log('Beats count:', beats.length);
-      
-      const rewards = await getRewards(userId);
-      console.log('Rewards result:', rewards);
+      if (currentChallengeData && currentChallengeData.challenge) {
+        console.log('Using frontend data for progress and details');
+        progress = {
+          currentPhase: 1,
+          phaseProgress: 0,
+          daysPerPhase: 0,
+          completionRate: challengeInfo.progress?.percentage || 0
+        };
+        beatDetails = currentChallengeData.beatDetails || [];
+        beats = currentChallengeData.beats || [];
+        rewards = {
+          total: currentChallengeData.rewards?.length || 0,
+          achieved: currentChallengeData.rewards?.filter((r: any) => r.status === 'achieved').length || 0,
+          planned: currentChallengeData.rewards?.filter((r: any) => r.status === 'planned').length || 0,
+          active: currentChallengeData.rewards?.filter((r: any) => r.status === 'active').length || 0
+        };
+        motivationalStatements = currentChallengeData.motivationalStatements || [];
+      } else {
+        console.log('Using database data for progress and details');
+        progress = await getBeatsProgress(userId);
+        console.log('Progress result:', progress);
+        
+        beatDetails = await getBeatDetails(userId);
+        console.log('Beat details count:', beatDetails?.length || 0);
+        
+        // Get beats data for proper date display
+        const challengeDataFromDb = await getChallengeData(userId);
+        beats = challengeDataFromDb.beats || [];
+        console.log('Beats count:', beats.length);
+        
+        rewards = await getRewards(userId);
+        console.log('Rewards result:', rewards);
+        
+        // Get motivational statements
+        motivationalStatements = await getMotivationalStatements(userId);
+        console.log('Motivational statements count:', motivationalStatements?.length || 0);
+      }
       
       if (challengeInfo && !challengeInfo.error) {
         console.log('Successfully fetched challenge data:', {
           title: challengeInfo.title,
+          description: challengeInfo.description,
+          status: challengeInfo.status,
           progress: challengeInfo.progress,
           rewards: rewards,
-          beatDetailsCount: beatDetails?.length || 0
+          beatDetailsCount: beatDetails?.length || 0,
+          beatsCount: beats.length
         });
+        
+        // Validate that we have meaningful challenge data
+        if (!challengeInfo.title || challengeInfo.title.trim() === '') {
+          console.log('Warning: Challenge title is empty or missing');
+        }
         
         challengeData = `
 USER'S CURRENT CHALLENGE DATA:
-- Challenge: ${challengeInfo.title}
-- Description: ${challengeInfo.description || 'No description'}
-- Duration: ${challengeInfo.duration} days
-- Status: ${challengeInfo.status}
+- Challenge: ${challengeInfo.title || 'Untitled Challenge'}
 - Progress: ${challengeInfo.progress?.completed || 0}/${challengeInfo.progress?.total || 0} days (${challengeInfo.progress?.percentage || 0}% complete)
-- Start Date: ${challengeInfo.startDate}
-- End Date: ${challengeInfo.endDate}
-
-PROGRESS DETAILS:
 - Current Phase: ${progress.currentPhase || 'N/A'}
-- Phase Progress: ${progress.phaseProgress || 0}/${progress.daysPerPhase || 0}
 - Completion Rate: ${progress.completionRate || 0}%
 
-RECENT BEAT DETAILS WITH TAGS (last 10 entries):
-${(beatDetails || []).slice(0, 10).map(detail => {
+RECENT ACTIVITY (last 5 entries):
+${(beatDetails || []).slice(0, 5).map((detail: any) => {
   const tag = detail.category || 'untagged';
-  const content = detail.content;
-  
-  // Find the corresponding beat to get the assigned date
-  const correspondingBeat = (beats || []).find(beat => beat.id === detail.beatId);
-  let dateDisplay = 'No date';
-  
-  if (correspondingBeat) {
-    // Use the beat's assigned date and day number
-    const assignedDate = new Date(correspondingBeat.date).toLocaleDateString();
-    const dayNumber = correspondingBeat.dayNumber;
-    dateDisplay = `Day ${dayNumber} (${assignedDate})`;
-  } else if (detail.createdAt) {
-    // Fallback to creation date if beat not found
-    dateDisplay = detail.createdAt.toLocaleDateString();
-  }
-  
-  return `- [${tag.toUpperCase()}] ${content} (${dateDisplay})`;
+  const content = detail.content.length > 100 ? detail.content.substring(0, 100) + '...' : detail.content;
+  return `- [${tag.toUpperCase()}] ${content}`;
 }).join('\n')}
 
 TAG SUMMARY:
 ${(() => {
   const tagCounts: { [key: string]: number } = {};
-  (beatDetails || []).forEach(detail => {
+  (beatDetails || []).forEach((detail: any) => {
     const tag = detail.category || 'untagged';
     tagCounts[tag] = (tagCounts[tag] || 0) + 1;
   });
   return Object.entries(tagCounts)
     .sort(([,a], [,b]) => b - a)
-    .map(([tag, count]) => `- ${tag}: ${count} entries`)
-    .join('\n');
+    .slice(0, 5) // Limit to top 5 tags
+    .map(([tag, count]) => `${tag}: ${count}`)
+    .join(', ');
 })()}
 
-REWARDS:
-- Total: ${rewards.total}
-- Achieved: ${rewards.achieved}
-- Planned: ${rewards.planned}
-- Active: ${rewards.active}
+REWARDS: ${rewards.achieved}/${rewards.total} achieved
+
+MOTIVATIONAL STATEMENTS:
+${Array.isArray(motivationalStatements) && motivationalStatements.length > 0 ? motivationalStatements.map((statement: any) => {
+  const why = statement.why ? `\n  - Why: ${statement.why}` : '';
+  const collaboration = statement.collaboration ? `\n  - Collaboration: ${statement.collaboration}` : '';
+  return `- ${statement.title}: ${statement.statement}${why}${collaboration}`;
+}).join('\n') : 'No motivational statements available'}
         `.trim();
       } else {
-        console.log('No challenge data found for user');
+        console.log('No challenge data found for user - challengeInfo:', challengeInfo);
+        console.log('This might indicate a data access issue or the user truly has no challenges');
         challengeData = '\nUSER HAS NO ACTIVE CHALLENGE DATA. Please encourage them to create their first challenge to start tracking their progress.';
       }
     } catch (error) {
@@ -158,13 +259,17 @@ REWARDS:
 Your role is to generate motivational "boosts" that help users overcome challenges and maintain momentum in their goal pursuit.
 
 RESPONSE REQUIREMENTS:
-- Generate a motivational response of 2-4 sentences
-- Be specific to the user's current challenge and progress
-- Reference their actual data when relevant (completion rates, recent entries, etc.)
-- Address their specific context and concerns from the prompt
+- Generate a SHORT, CONCISE motivational response of 1-2 sentences maximum
+- Keep it quick, punchy, and to the point - no lengthy explanations
+- ALWAYS reference the user's actual challenge data provided below
+- Be specific to their current challenge title and progress
+- Use their motivational statements for personalized encouragement
+- Connect their stated motivations ("why") to their current progress
+- Address their specific context from the prompt
 - Use an encouraging, supportive tone
 - Focus on actionable motivation rather than generic advice
 - Incorporate the specific Move concept principles into your response
+- NEVER say the user has no active challenge if challenge data is provided below
 
 MOVE CONCEPT DETAILS:
 - Move Type: ${moveType || 'general'} (${moveTitle || 'Move'})
@@ -176,16 +281,26 @@ ${moveContent}
 ${moveAiBoostContent ? `AI BOOST GUIDANCE:
 ${moveAiBoostContent}` : ''}` : ''}
 
+CHALLENGE DATA (USE THIS INFORMATION):
 ${challengeData}
 
 USER'S ADDITIONAL CONTEXT:
 ${promptContext || 'No additional context provided'}
 
-Generate a personalized motivational boost that helps this user stay motivated and focused on their goal achievement journey. The boost should incorporate the specific Move concept principles and be tailored to their current challenge data and personal context.`;
+CRITICAL INSTRUCTIONS:
+1. The challenge data above shows the user's current active challenge
+2. Create a SHORT, PUNCHY boost that references their specific challenge title and progress
+3. Reference their motivational statements for personalized encouragement
+4. Connect their stated "why" motivations to their current progress and the Move concept
+5. Keep it brief - 1-2 sentences maximum, no lengthy explanations
+6. Do not say they have no active challenge if the data above shows challenge information
+7. Always mention their challenge title and current progress in your response
+8. Make the boost specific to their actual data, not generic advice`;
 
     console.log('Generating boost with system prompt length:', systemPrompt.length);
+    console.log('Challenge data being sent to AI:', challengeData.substring(0, 500) + '...');
 
-    // Generate motivational boost using OpenAI
+    // Generate motivational boost using OpenAI with timeout
     const result = await generateText({
       model: openai(process.env.OPENAI_MODEL || "gpt-4o-mini"),
       messages: [
@@ -195,7 +310,7 @@ Generate a personalized motivational boost that helps this user stay motivated a
         },
         {
           role: 'user',
-          content: 'Generate a motivational boost for my current challenge and situation.'
+          content: `Generate a motivational boost for my current challenge and situation. Use the challenge data provided in the system prompt to create a personalized response that references my specific challenge: "${challengeInfo?.title || 'my challenge'}" and my current progress.`
         }
       ],
     });
@@ -213,6 +328,19 @@ Generate a personalized motivational boost that helps this user stay motivated a
 
   } catch (error) {
     console.error('Move Boost API error:', error);
+    
+    // Handle timeout errors specifically
+    if (error instanceof Error && error.message.includes('timeout')) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Request timed out. Please try again with a shorter prompt.',
+        details: 'The AI response took too long to generate.'
+      }), {
+        status: 408,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     return new Response(JSON.stringify({
       success: false,
       error: 'Failed to generate motivational boost. Please try again.',

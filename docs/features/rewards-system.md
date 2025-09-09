@@ -78,7 +78,7 @@ Long-term goal pursuit suffers from:
 - **Proof URL Integration**: Link external evidence of reward completion
 - **Achievement Timestamps**: Automatic recording of achievement dates
 - **Reward Statistics**: Real-time calculation of completion metrics
-- **CRUD Operations**: Full create, read, update, delete functionality
+- **Complete Management**: Full create, read, update, delete functionality
 - **Status Badge System**: Visual indicators for reward status
 - **Responsive Design**: Card-based layout adapting to different screen sizes
 
@@ -104,7 +104,7 @@ Long-term goal pursuit suffers from:
 ## Testing Strategy
 
 - **Status Transitions**: Test planned → active → achieved workflow
-- **CRUD Operations**: Validate all create, read, update, delete functions
+- **Data Management**: Validate all create, read, update, delete functions
 - **Proof URL Handling**: Test URL validation and external link functionality
 - **Statistics Accuracy**: Verify correct calculation of reward metrics
 - **Responsive Layout**: Test card layouts across different screen sizes

@@ -943,6 +943,17 @@ function SettingsContent() {
       if (challenges.length === 0) {
         await setDefaultChallenge(newChallenge.id);
         
+        // If template includes motivational statement, add it to the challenge
+        if (formData.motivationalStatement) {
+          await addMotivationalStatement({
+            title: formData.motivationalStatement.title,
+            statement: formData.motivationalStatement.statement,
+            why: formData.motivationalStatement.why,
+            collaboration: formData.motivationalStatement.collaboration,
+            challengeId: newChallenge.id,
+          });
+        }
+        
         // If template includes rewards, add them to the challenge
         if (formData.rewards && formData.rewards.length > 0) {
           for (const reward of formData.rewards) {
@@ -954,14 +965,25 @@ function SettingsContent() {
           }
         }
       } else {
-        // For subsequent challenges, we need to temporarily set this as current to add rewards
+        // For subsequent challenges, we need to temporarily set this as current to add rewards and motivational statements
         const previousDefault = currentChallenge?.id;
         await setDefaultChallenge(newChallenge.id);
         
+        // Add a small delay to ensure the challenge context has been updated
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // If template includes motivational statement, add it to the challenge
+        if (formData.motivationalStatement) {
+          await addMotivationalStatement({
+            title: formData.motivationalStatement.title,
+            statement: formData.motivationalStatement.statement,
+            why: formData.motivationalStatement.why,
+            collaboration: formData.motivationalStatement.collaboration,
+            challengeId: newChallenge.id,
+          });
+        }
+        
         if (formData.rewards && formData.rewards.length > 0) {
-          // Add a small delay to ensure the challenge context has been updated
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
           for (const reward of formData.rewards) {
             await addReward({
               title: reward.title,
@@ -975,16 +997,6 @@ function SettingsContent() {
         if (previousDefault && previousDefault !== newChallenge.id) {
           await setDefaultChallenge(previousDefault);
         }
-      }
-
-      // Save motivational statement if provided
-      if (formData.motivationalStatement) {
-        await addMotivationalStatement({
-          title: formData.motivationalStatement.title,
-          statement: formData.motivationalStatement.statement,
-          why: formData.motivationalStatement.why || '',
-          collaboration: formData.motivationalStatement.collaboration || '',
-        });
       }
     } catch (error) {
       console.error('Error creating challenge:', error);

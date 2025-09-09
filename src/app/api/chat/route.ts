@@ -6,7 +6,8 @@ import {
   getChallengeInfo, 
   getBeatsProgress, 
   getRewards,
-  getChallengeData
+  getChallengeData,
+  getMotivationalStatements
 } from "@/lib/challenge-data";
 
 // Allow streaming responses up to 30 seconds
@@ -66,12 +67,99 @@ export async function POST(req: Request) {
     console.log('Using OpenAI model:', process.env.OPENAI_MODEL || "gpt-4o-mini");
     console.log('OpenAI API Key prefix:', process.env.OPENAI_API_KEY?.substring(0, 8) + '...');
 
-    // Use challenge data passed from frontend or fetch from database as fallback
+    // Always try to get the latest data from database first, then use frontend data as fallback
     let challengeData = '';
+    let usingDatabaseData = false;
     
-    if (frontendChallengeData && frontendChallengeData.challenge && frontendChallengeData.challenge.name) {
-      console.log('Using challenge data from frontend');
-      const { challenge, beats, beatDetails, rewards } = frontendChallengeData;
+    // First, try to get the latest data from database to ensure we have the most current active challenge
+    try {
+      console.log('Fetching latest challenge data from database...');
+      const challengeInfo = await getChallengeInfo(userId);
+      console.log('Database challenge info:', challengeInfo);
+      
+      if (challengeInfo && !challengeInfo.error && challengeInfo.status === 'active') {
+        console.log('Using database data (active challenge found)');
+        usingDatabaseData = true;
+        
+        const progress = await getBeatsProgress(userId);
+        const beatDetails = await getBeatDetails(userId);
+        const challengeDataFromDb = await getChallengeData(userId);
+        const beats = challengeDataFromDb.beats || [];
+        const rewards = await getRewards(userId);
+        const motivationalStatements = await getMotivationalStatements(userId);
+        
+        challengeData = `
+USER'S CURRENT CHALLENGE DATA:
+- Challenge: ${challengeInfo.title}
+- Description: ${challengeInfo.description || 'No description'}
+- Duration: ${challengeInfo.duration} days
+- Status: ${challengeInfo.status}
+- Progress: ${challengeInfo.progress?.completed || 0}/${challengeInfo.progress?.total || 0} days (${challengeInfo.progress?.percentage || 0}% complete)
+- Start Date: ${challengeInfo.startDate}
+- End Date: ${challengeInfo.endDate}
+
+PROGRESS DETAILS:
+- Current Phase: ${progress.currentPhase || 'N/A'}
+- Phase Progress: ${progress.phaseProgress || 0}/${progress.daysPerPhase || 0}
+- Completion Rate: ${progress.completionRate || 0}%
+
+RECENT BEAT DETAILS WITH TAGS (last 10 entries):
+${(beatDetails || []).slice(0, 10).map(detail => {
+  const tag = detail.category || 'untagged';
+  const content = detail.content;
+  
+  // Find the corresponding beat to get the assigned date
+  const correspondingBeat = (beats || []).find(beat => beat.id === detail.beatId);
+  let dateDisplay = 'No date';
+  
+  if (correspondingBeat) {
+    // Use the beat's assigned date and day number
+    const assignedDate = new Date(correspondingBeat.date).toLocaleDateString();
+    const dayNumber = correspondingBeat.dayNumber;
+    dateDisplay = `Day ${dayNumber} (${assignedDate})`;
+  } else if (detail.createdAt) {
+    // Fallback to creation date if beat not found
+    dateDisplay = detail.createdAt.toLocaleDateString();
+  }
+  
+  return `- [${tag.toUpperCase()}] ${content} (${dateDisplay})`;
+}).join('\n')}
+
+TAG SUMMARY:
+${(() => {
+  const tagCounts: { [key: string]: number } = {};
+  (beatDetails || []).forEach(detail => {
+    const tag = detail.category || 'untagged';
+    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+  });
+  return Object.entries(tagCounts)
+    .sort(([,a], [,b]) => b - a)
+    .map(([tag, count]) => `- ${tag}: ${count} entries`)
+    .join('\n');
+})()}
+
+REWARDS:
+- Total: ${rewards.total}
+- Achieved: ${rewards.achieved}
+- Planned: ${rewards.planned}
+- Active: ${rewards.active}
+
+MOTIVATIONAL STATEMENTS:
+${Array.isArray(motivationalStatements) && motivationalStatements.length > 0 ? motivationalStatements.map((statement: any) => {
+  const why = statement.why ? `\n  - Why: ${statement.why}` : '';
+  const collaboration = statement.collaboration ? `\n  - Collaboration: ${statement.collaboration}` : '';
+  return `- ${statement.title}: ${statement.statement}${why}${collaboration}`;
+}).join('\n') : 'No motivational statements available'}
+        `.trim();
+      }
+    } catch (dbError) {
+      console.error('Error fetching from database, falling back to frontend data:', dbError);
+    }
+    
+    // If we didn't get active challenge data from database, use frontend data as fallback
+    if (!usingDatabaseData && frontendChallengeData && frontendChallengeData.challenge && frontendChallengeData.challenge.name) {
+      console.log('Using challenge data from frontend (database fallback)');
+      const { challenge, beats, beatDetails, rewards, motivationalStatements } = frontendChallengeData;
       
       // Calculate progress with safe array handling
       const beatsArray = Array.isArray(beats) ? beats : [];
@@ -131,94 +219,18 @@ ${Array.isArray(beatDetails) ? (() => {
 })() : 'No tags available'}
 
 REWARDS EARNED:
-${Array.isArray(rewards) ? rewards.slice(0, 5).map((reward: any) => `- ${reward?.name || 'No name'}: ${reward?.description || 'No description'} (${reward?.points || 0} points)`).join('\n') : 'No rewards available'}
+${Array.isArray(rewards) ? rewards.slice(0, 5).map((reward: any) => `- ${reward?.name || 'No name'}: ${reward?.description || 'No description'}`).join('\n') : 'No rewards available'}
+
+MOTIVATIONAL STATEMENTS:
+${Array.isArray(motivationalStatements) && motivationalStatements.length > 0 ? motivationalStatements.map((statement: any) => {
+  const why = statement.why ? `\n  - Why: ${statement.why}` : '';
+  const collaboration = statement.collaboration ? `\n  - Collaboration: ${statement.collaboration}` : '';
+  return `- ${statement.title}: ${statement.statement}${why}${collaboration}`;
+}).join('\n') : 'No motivational statements available'}
       `.trim();
     } else {
-      console.log('No challenge data from frontend, fetching from database...');
-      console.log('Frontend challenge data received:', frontendChallengeData ? 'exists but challenge is null/empty' : 'not provided');
-      try {
-        console.log('Attempting to fetch challenge info from database...');
-        const challengeInfo = await getChallengeInfo(userId);
-        console.log('Challenge info result:', challengeInfo);
-        
-        const progress = await getBeatsProgress(userId);
-        console.log('Progress result:', progress);
-        
-        const beatDetails = await getBeatDetails(userId);
-        console.log('Beat details count:', beatDetails?.length || 0);
-        
-        // Get beats data for proper date display
-        const challengeDataFromDb = await getChallengeData(userId);
-        const beats = challengeDataFromDb.beats || [];
-        console.log('Beats count:', beats.length);
-        
-        const rewards = await getRewards(userId);
-        console.log('Rewards result:', rewards);
-        
-        if (challengeInfo && !challengeInfo.error) {
-          challengeData = `
-USER'S CURRENT CHALLENGE DATA:
-- Challenge: ${challengeInfo.title}
-- Description: ${challengeInfo.description || 'No description'}
-- Duration: ${challengeInfo.duration} days
-- Status: ${challengeInfo.status}
-- Progress: ${challengeInfo.progress?.completed || 0}/${challengeInfo.progress?.total || 0} days (${challengeInfo.progress?.percentage || 0}% complete)
-- Start Date: ${challengeInfo.startDate}
-- End Date: ${challengeInfo.endDate}
-
-PROGRESS DETAILS:
-- Current Phase: ${progress.currentPhase || 'N/A'}
-- Phase Progress: ${progress.phaseProgress || 0}/${progress.daysPerPhase || 0}
-- Completion Rate: ${progress.completionRate || 0}%
-
-RECENT BEAT DETAILS WITH TAGS (last 10 entries):
-${(beatDetails || []).slice(0, 10).map(detail => {
-  const tag = detail.category || 'untagged';
-  const content = detail.content;
-  
-  // Find the corresponding beat to get the assigned date
-  const correspondingBeat = (beats || []).find(beat => beat.id === detail.beatId);
-  let dateDisplay = 'No date';
-  
-  if (correspondingBeat) {
-    // Use the beat's assigned date and day number
-    const assignedDate = new Date(correspondingBeat.date).toLocaleDateString();
-    const dayNumber = correspondingBeat.dayNumber;
-    dateDisplay = `Day ${dayNumber} (${assignedDate})`;
-  } else if (detail.createdAt) {
-    // Fallback to creation date if beat not found
-    dateDisplay = detail.createdAt.toLocaleDateString();
-  }
-  
-  return `- [${tag.toUpperCase()}] ${content} (${dateDisplay})`;
-}).join('\n')}
-
-TAG SUMMARY:
-${(() => {
-  const tagCounts: { [key: string]: number } = {};
-  (beatDetails || []).forEach(detail => {
-    const tag = detail.category || 'untagged';
-    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-  });
-  return Object.entries(tagCounts)
-    .sort(([,a], [,b]) => b - a)
-    .map(([tag, count]) => `- ${tag}: ${count} entries`)
-    .join('\n');
-})()}
-
-REWARDS:
-- Total: ${rewards.total}
-- Achieved: ${rewards.achieved}
-- Planned: ${rewards.planned}
-- Active: ${rewards.active}
-          `.trim();
-        } else {
-          challengeData = '\nUSER HAS NO ACTIVE CHALLENGE DATA.';
-        }
-      } catch (error) {
-        console.error('Error fetching challenge data:', error);
-        challengeData = '\nUNABLE TO FETCH USER CHALLENGE DATA.';
-      }
+      console.log('No challenge data available from either database or frontend');
+      challengeData = '\nUSER HAS NO ACTIVE CHALLENGE DATA.';
     }
 
     // Filter and validate messages before conversion
@@ -279,6 +291,7 @@ Key concepts:
 - Challenges: Goal-tracking campaigns with specific durations
 - Beats: Individual days in a challenge
 - Beat Details: Daily entries with categories/tags (e.g., "meals", "bad day", "exercise")
+- Motivational Statements: Personal statements that include the statement, why (reasoning), and collaboration (how others can help)
 - Progress tracking and motivation
 
 TAG ANALYSIS:
@@ -286,6 +299,12 @@ TAG ANALYSIS:
 - Group entries by their tags to identify patterns
 - Use tag information to provide specific insights about user behavior
 - When users ask about specific topics (like "meals" or "bad day"), focus on entries with those tags
+
+MOTIVATIONAL STATEMENTS:
+- Reference the user's motivational statements when providing encouragement
+- Use the "why" field to understand their deeper motivation
+- Suggest collaboration opportunities based on the "collaboration" field
+- Connect current progress to their stated motivations
 
 DATE FORMATTING:
 - Use the formatted dates provided in the data (e.g., "9/9/2025") 
@@ -347,6 +366,7 @@ Key concepts:
 - Challenges: Goal-tracking campaigns with specific durations
 - Beats: Individual days in a challenge
 - Beat Details: Daily entries with categories/tags (e.g., "meals", "bad day", "exercise")
+- Motivational Statements: Personal statements that include the statement, why (reasoning), and collaboration (how others can help)
 - Progress tracking and motivation
 
 TAG ANALYSIS:
@@ -354,6 +374,12 @@ TAG ANALYSIS:
 - Group entries by their tags to identify patterns
 - Use tag information to provide specific insights about user behavior
 - When users ask about specific topics (like "meals" or "bad day"), focus on entries with those tags
+
+MOTIVATIONAL STATEMENTS:
+- Reference the user's motivational statements when providing encouragement
+- Use the "why" field to understand their deeper motivation
+- Suggest collaboration opportunities based on the "collaboration" field
+- Connect current progress to their stated motivations
 
 DATE FORMATTING:
 - Use the formatted dates provided in the data (e.g., "9/9/2025") 

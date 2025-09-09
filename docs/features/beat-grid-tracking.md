@@ -79,7 +79,7 @@ Users struggle to maintain consistency in long-term goal achievement due to:
 - **Date Validation**: Prevents adding details to future dates
 - **Completion Sequencing**: Numbers completed beats chronologically regardless of completion order
 - **Category Management**: Reuse and suggest previously used tags
-- **Edit/Delete Operations**: Full CRUD operations on beat details
+- **Edit/Delete Operations**: Complete management capabilities for beat details
 - **Copy Functionality**: Duplicate successful daily patterns to other days
 - **Phase Management**: Support for challenges up to 91 days per phase with navigation
 
@@ -107,7 +107,7 @@ Users struggle to maintain consistency in long-term goal achievement due to:
 - **Grid Rendering**: Test all grid sizes from 1 beat to 91 beats
 - **Date Logic**: Verify correct handling of past, present, and future dates
 - **Phase Management**: Test navigation between multiple phases
-- **CRUD Operations**: Validate all create, read, update, delete operations
+- **Data Management**: Validate all create, read, update, delete operations
 - **Responsive Design**: Test grid layout across different screen sizes
 - **Deep Linking**: Verify URL parameter handling for specific beats
 

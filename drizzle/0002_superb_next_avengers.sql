@@ -1,0 +1,2 @@
+ALTER TABLE "motivationalStatements" ADD COLUMN "challengeId" text;--> statement-breakpoint
+ALTER TABLE "motivationalStatements" ADD CONSTRAINT "motivationalStatements_challengeId_challenges_id_fk" FOREIGN KEY ("challengeId") REFERENCES "public"."challenges"("id") ON DELETE cascade ON UPDATE no action;

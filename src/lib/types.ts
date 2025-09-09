@@ -63,6 +63,7 @@ export interface Reward {
 export interface MotivationalStatement {
   id: string;
   userId: string;
+  challengeId?: string;
   title: string;
   statement: string;
   why?: string;

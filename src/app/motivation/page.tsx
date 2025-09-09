@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { MotivationProvider, useMotivationContext } from "@/contexts/MotivationContext";
+import { ChallengeProvider, useChallengeContext } from "@/contexts/ChallengeContext";
 import { useSession } from "@/lib/auth-client";
 import { MotivationalStatement, MotivationalStatementForm } from "@/lib/types";
 import { AuthenticationPage } from "@/components/auth/authentication-page";
@@ -288,18 +288,28 @@ function AddStatementDialog({ isOpen, onClose, onSubmit }: AddStatementDialogPro
 
 function MotivationContent() {
   const {
-    statements,
+    currentChallenge,
+    motivationalStatements,
     isLoading,
-    addStatement,
-    updateStatement,
-    deleteStatement,
-  } = useMotivationContext();
+    addMotivationalStatement,
+    updateMotivationalStatement,
+    deleteMotivationalStatement,
+  } = useChallengeContext();
+
+  // Filter statements to only show those for the current active challenge
+  const statements = motivationalStatements.filter(statement => 
+    statement.challengeId === currentChallenge?.id
+  );
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   const handleAddStatement = async (formData: MotivationalStatementForm) => {
     try {
-      await addStatement(formData);
+      await addMotivationalStatement({
+        ...formData,
+        challengeId: currentChallenge?.id
+      });
+      setIsAddDialogOpen(false);
     } catch (error) {
       console.error('Error adding statement:', error);
     }
@@ -307,7 +317,7 @@ function MotivationContent() {
 
   const handleUpdateStatement = async (statementId: string, updates: Partial<MotivationalStatement>) => {
     try {
-      await updateStatement(statementId, updates);
+      await updateMotivationalStatement(statementId, updates);
     } catch (error) {
       console.error('Error updating statement:', error);
     }
@@ -316,7 +326,7 @@ function MotivationContent() {
   const handleDeleteStatement = async (statementId: string) => {
     if (confirm('Are you sure you want to delete this motivational statement?')) {
       try {
-        await deleteStatement(statementId);
+        await deleteMotivationalStatement(statementId);
       } catch (error) {
         console.error('Error deleting statement:', error);
       }
@@ -341,6 +351,27 @@ function MotivationContent() {
     );
   }
 
+  // Show message if no active challenge
+  if (!currentChallenge) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <h1 className="text-3xl font-bold">Motivation</h1>
+          <div className="bg-muted/50 border border-dashed rounded-lg p-8">
+            <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h2 className="text-xl font-semibold mb-2">No Active Challenge</h2>
+            <p className="text-muted-foreground mb-4">
+              You need to have an active challenge to view and manage motivational statements.
+            </p>
+            <Button asChild>
+              <a href="/beats">Go to Challenges</a>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -349,6 +380,9 @@ function MotivationContent() {
           <h1 className="text-3xl font-bold">
             Motivation
           </h1>
+          <div className="text-muted-foreground">
+            <p>Motivational statements for: <span className="font-semibold text-foreground">{currentChallenge.title}</span></p>
+          </div>
         </div>
 
         {/* Add Statement Button */}
@@ -404,8 +438,8 @@ export default function MotivationPage() {
   }
 
   return (
-    <MotivationProvider userId={session.user.id}>
+    <ChallengeProvider userId={session.user.id}>
       <MotivationContent />
-    </MotivationProvider>
+    </ChallengeProvider>
   );
 }

@@ -172,6 +172,7 @@ export async function saveMotivationalStatementToDatabase(statement: Motivationa
     await db.insert(motivationalStatements).values({
       id: statement.id,
       userId: statement.userId,
+      challengeId: statement.challengeId,
       title: statement.title,
       statement: statement.statement,
       why: statement.why,
@@ -182,6 +183,7 @@ export async function saveMotivationalStatementToDatabase(statement: Motivationa
       target: motivationalStatements.id,
       set: {
         userId: statement.userId,
+        challengeId: statement.challengeId,
         title: statement.title,
         statement: statement.statement,
         why: statement.why,

@@ -81,7 +81,7 @@ Goal achievers often struggle with:
 - **Notification Toggle System**: Granular control over communication channel activation
 - **Contact Statistics**: Real-time calculations of network size and contact coverage
 - **Role Management**: Free-text role assignment for flexible categorization
-- **CRUD Operations**: Full create, read, update, delete functionality for allies
+- **Complete Management**: Full create, read, update, delete functionality for allies
 - **Responsive Design**: Card-based layout optimized for different screen sizes
 
 ## User Interface Specifications
@@ -106,7 +106,7 @@ Goal achievers often struggle with:
 ## Testing Strategy
 
 - **Contact Validation**: Test all contact method input validation and formatting
-- **CRUD Operations**: Validate all create, read, update, delete functions
+- **Data Management**: Validate all create, read, update, delete functions
 - **Notification Preferences**: Test all combinations of notification channel selections
 - **Responsive Layout**: Verify card layouts across different screen sizes
 - **Statistics Accuracy**: Ensure correct calculation of network metrics

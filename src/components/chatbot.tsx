@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { useState, useContext, useMemo } from "react";
+import { useState, useContext, useMemo, useEffect } from "react";
 import { useChallengeContext } from "@/contexts/ChallengeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -133,12 +133,29 @@ export function Chatbot({ userId, className }: ChatbotProps) {
   // Get challenge data and sync function from context
   const { 
     syncToDatabase, 
+    refreshData,
     currentChallenge, 
     challenges, 
     beats, 
     beatDetails, 
-    rewards 
+    rewards,
+    motivationalStatements
   } = useChallengeContext();
+
+  // Listen for challenge changes and refresh data when active challenge changes
+  useEffect(() => {
+    const handleChallengeUpdate = () => {
+      console.log('Challenge update detected, refreshing chatbot data...');
+      refreshData();
+    };
+
+    // Listen for challenge update events
+    window.addEventListener('beatbox-challenge-updated', handleChallengeUpdate);
+    
+    return () => {
+      window.removeEventListener('beatbox-challenge-updated', handleChallengeUpdate);
+    };
+  }, [refreshData]);
   
   // Function to format challenge data for the API
   const getChallengeDataForAPI = () => {
@@ -172,8 +189,18 @@ export function Chatbot({ userId, className }: ChatbotProps) {
     const formattedRewards = rewards.map(reward => ({
       ...reward,
       name: reward.title, // Map title to name for backend
-      points: 0, // Add points field (default to 0)
       achievedAt: reward.achievedAt?.toISOString() // Ensure date is in ISO format
+    }));
+
+    // Filter motivational statements to only show those for the current active challenge
+    const challengeMotivationalStatements = motivationalStatements.filter(statement => 
+      statement.challengeId === currentChallenge?.id
+    );
+
+    // Format motivational statements to match backend expectations
+    const formattedMotivationalStatements = challengeMotivationalStatements.map(statement => ({
+      ...statement,
+      createdAt: statement.createdAt.toISOString() // Ensure date is in ISO format
     }));
 
     return {
@@ -185,7 +212,8 @@ export function Chatbot({ userId, className }: ChatbotProps) {
       },
       beats: formattedBeats,
       beatDetails: formattedBeatDetails,
-      rewards: formattedRewards
+      rewards: formattedRewards,
+      motivationalStatements: formattedMotivationalStatements
     };
   };
 
@@ -213,6 +241,10 @@ export function Chatbot({ userId, className }: ChatbotProps) {
       setMessages(prev => [...prev, userMessage]);
       const currentInput = input;
       setInput("");
+      
+      // Force refresh challenge data before sending message to ensure we have latest data
+      console.log('Refreshing challenge data before sending message...');
+      await refreshData();
       
       // Get fresh challenge data
       const challengeData = getChallengeDataForAPI();
@@ -379,15 +411,18 @@ export function Chatbot({ userId, className }: ChatbotProps) {
       </Button>
 
       {/* Chat Dialog */}
-        <Dialog open={isOpen} onOpenChange={(open) => {
+        <Dialog open={isOpen} onOpenChange={async (open) => {
           setIsOpen(open);
           if (open) {
-            // Sync data to database when chatbot is opened
-            syncToDatabase();
+            // Force a refresh of the challenge data first
+            console.log('Chat opened - refreshing challenge data...');
+            await refreshData();
+            // Then sync data to database when chatbot is opened
+            await syncToDatabase();
             // Reset fallback flag when opening dialog (in case issue was resolved)
             setUseFallback(false);
-            // Force a refresh of the challenge data
-            console.log('Chat opened - current challenge data:', getChallengeDataForAPI());
+            // Log the current challenge data after refresh
+            console.log('Chat opened - current challenge data after refresh:', getChallengeDataForAPI());
           }
         }}>
         <DialogContent 

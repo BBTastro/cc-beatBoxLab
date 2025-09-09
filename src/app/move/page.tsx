@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useSession } from "@/lib/auth-client";
 import { AuthenticationPage } from "@/components/auth/authentication-page";
+import { useChallengeContext, ChallengeProvider } from "@/contexts/ChallengeContext";
 import { 
   Target, 
   Zap, 
@@ -263,6 +264,9 @@ function MoveDetailDialog({ card, isOpen, onClose }: MoveDetailDialogProps) {
   const [isGeneratingBoost, setIsGeneratingBoost] = useState(false);
   const [boostCopied, setBoostCopied] = useState(false);
   const [boostError, setBoostError] = useState<string | null>(null);
+  
+  // Get challenge context for syncing and current challenge data
+  const { syncToDatabase, currentChallenge, challenges, beats, beatDetails, rewards, motivationalStatements } = useChallengeContext();
 
   const copyToClipboard = async (text: string, section: string) => {
     try {
@@ -296,6 +300,11 @@ function MoveDetailDialog({ card, isOpen, onClose }: MoveDetailDialogProps) {
     setBoostError(null);
     
     try {
+      // First, sync the current challenge data to the database to ensure AI Boost has latest data
+      console.log('Syncing challenge data to database before AI Boost...');
+      await syncToDatabase();
+      console.log('Sync completed, calling AI Boost API...');
+      
       const response = await fetch('/api/move/boost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -304,9 +313,32 @@ function MoveDetailDialog({ card, isOpen, onClose }: MoveDetailDialogProps) {
           moveType: card?.type,
           moveTitle: card?.title,
           moveContent: card?.content,
-          moveAiBoostContent: card?.aiBoostContent
+          moveAiBoostContent: card?.aiBoostContent,
+          // Pass current challenge data directly as fallback
+          currentChallengeData: {
+            challenge: currentChallenge,
+            challenges: challenges,
+            beats: beats,
+            beatDetails: beatDetails,
+            rewards: rewards,
+            // Filter motivational statements to only show those for the current active challenge
+            motivationalStatements: motivationalStatements.filter(statement => 
+              statement.challengeId === currentChallenge?.id
+            )
+          }
         })
       });
+      
+      if (!response.ok) {
+        if (response.status === 408) {
+          setBoostError('Request timed out. Please try again with a shorter prompt.');
+        } else if (response.status === 504) {
+          setBoostError('Server timeout. Please try again.');
+        } else {
+          setBoostError(`Server error (${response.status}). Please try again.`);
+        }
+        return;
+      }
       
       const data = await response.json();
       
@@ -316,7 +348,12 @@ function MoveDetailDialog({ card, isOpen, onClose }: MoveDetailDialogProps) {
         setBoostError(data.error || 'Failed to generate boost');
       }
     } catch (error) {
-      setBoostError('Network error. Please try again.');
+      console.error('Error generating boost:', error);
+      if (error instanceof SyntaxError) {
+        setBoostError('Invalid response from server. Please try again.');
+      } else {
+        setBoostError('Network error. Please try again.');
+      }
     } finally {
       setIsGeneratingBoost(false);
     }
@@ -340,16 +377,7 @@ function MoveDetailDialog({ card, isOpen, onClose }: MoveDetailDialogProps) {
 
   if (!card) return null;
 
-  const conceptsContent = `Strategic thinking focuses on creating systematic approaches to creative transformation and goal achievement. This comprehensive framework includes:
-
-• Vision assessment and analysis
-• Goal-oriented design principles
-• Progressive capability development
-• Performance optimization strategies
-• Long-term planning methodologies
-• Adaptation and modification protocols
-
-The strategic approach ensures that every creative action contributes to larger objectives while maintaining sustainable progress and preventing stagnation.`;
+  const conceptsContent = card.content;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -593,5 +621,9 @@ export default function MovePage() {
     return <AuthenticationPage />;
   }
 
-  return <MoveContent />;
+  return (
+    <ChallengeProvider userId={session.user.id}>
+      <MoveContent />
+    </ChallengeProvider>
+  );
 }

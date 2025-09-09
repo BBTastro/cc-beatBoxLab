@@ -180,7 +180,7 @@ npm run db:reset     # Reset database (drop all tables)
 ## 📚 Feature Documentation
 
 Comprehensive feature documentation is available in `/docs/features/`:
-
+- [Quick Start with €100K Template](.docs/features/QUICK-START-GUIDE.md) - Get you up and running
 - [Beat Grid Tracking](./docs/features/beat-grid-tracking.md) - Visual progress tracking system
 - [Rewards System](./docs/features/rewards-system.md) - Achievement-based motivation management  
 - [Motivational Statements](./docs/features/motivational-statements.md) - Personal inspiration framework

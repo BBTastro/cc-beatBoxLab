@@ -13,7 +13,13 @@ export function useUserTracking() {
 
   // Track page visits
   useEffect(() => {
-    if (!session?.user?.id || !session?.user?.email) return;
+    if (!session?.user?.id || !session?.user?.email) {
+      console.log('User tracking skipped - no session data:', { 
+        hasUserId: !!session?.user?.id, 
+        hasEmail: !!session?.user?.email 
+      });
+      return;
+    }
 
     const currentPath = pathname;
     
@@ -30,6 +36,16 @@ export function useUserTracking() {
       setCurrentSession(currentSessionId);
     }
     sessionId.current = currentSessionId;
+
+    // Validate data before tracking
+    if (!session.user.id || !session.user.email || !currentPath) {
+      console.error('Invalid data for tracking:', {
+        userId: session.user.id,
+        email: session.user.email,
+        path: currentPath
+      });
+      return;
+    }
 
     // Track page visit
     trackPageVisit(

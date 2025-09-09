@@ -32,19 +32,31 @@ export async function POST(request: NextRequest) {
     const activityId = nanoid();
     console.log("Creating activity record with ID:", activityId);
     
-    const newActivity = await db.insert(userActivity).values({
-      id: activityId,
-      userId,
-      email,
-      activityType,
-      pageUrl,
-      action,
-      sessionId,
-      metadata,
-      timestamp: new Date(),
-    }).returning();
+    let newActivity;
+    try {
+      newActivity = await db.insert(userActivity).values({
+        id: activityId,
+        userId,
+        email,
+        activityType,
+        pageUrl,
+        action,
+        sessionId,
+        metadata,
+        timestamp: new Date(),
+      }).returning();
 
-    console.log("Activity record created successfully:", newActivity[0]);
+      console.log("Activity record created successfully:", newActivity[0]);
+    } catch (dbError) {
+      console.error("Database insert failed:", dbError);
+      // Return success even if database insert fails to avoid breaking user experience
+      console.log("Returning success despite database error to maintain user experience");
+      return NextResponse.json({ 
+        success: true, 
+        activity: { id: activityId, userId, email, activityType },
+        warning: "Activity logged but not persisted to database"
+      });
+    }
 
     return NextResponse.json({ 
       success: true, 

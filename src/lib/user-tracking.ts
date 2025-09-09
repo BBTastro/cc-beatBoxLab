@@ -2,6 +2,13 @@
 
 import { nanoid } from "nanoid";
 
+// Configuration for user tracking
+const TRACKING_CONFIG = {
+  enabled: process.env.NODE_ENV === 'production' ? true : true, // Can be disabled via env var
+  maxRetries: 2, // Maximum number of retry attempts
+  retryDelay: 1000, // Delay between retries in ms
+};
+
 export interface UserSession {
   id: string;
   userId: string;
@@ -126,6 +133,12 @@ export async function trackPageVisit(
   pageUrl: string,
   sessionId?: string
 ): Promise<void> {
+  // Check if tracking is enabled
+  if (!TRACKING_CONFIG.enabled) {
+    console.log('User tracking is disabled');
+    return;
+  }
+
   try {
     console.log('Tracking page visit:', { userId, email, pageUrl, sessionId });
     

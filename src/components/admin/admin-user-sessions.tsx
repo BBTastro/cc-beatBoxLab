@@ -58,7 +58,8 @@ export function AdminUserSessions({ isAdmin, selectedUserId }: AdminUserSessions
       const response = await fetch(url);
       
       if (!response.ok) {
-        throw new Error('Failed to fetch sessions');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to fetch sessions`);
       }
       
       const data = await response.json();
@@ -71,7 +72,8 @@ export function AdminUserSessions({ isAdmin, selectedUserId }: AdminUserSessions
       setSessions(filteredSessions);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
       console.error('Error fetching sessions:', err);
     } finally {
       setLoading(false);

@@ -77,14 +77,16 @@ export function AdminUserActivity({ isAdmin, selectedUserId }: AdminUserActivity
       const response = await fetch(url);
       
       if (!response.ok) {
-        throw new Error('Failed to fetch activities');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to fetch activities`);
       }
       
       const data = await response.json();
       setActivities(data.activities || []);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
       console.error('Error fetching activities:', err);
     } finally {
       setLoading(false);

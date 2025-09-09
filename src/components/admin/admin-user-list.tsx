@@ -52,14 +52,16 @@ export function AdminUserList({ isAdmin }: AdminUserListProps) {
       const response = await fetch('/api/admin/users');
       
       if (!response.ok) {
-        throw new Error('Failed to fetch users');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to fetch users`);
       }
       
       const data = await response.json();
       setUsers(data.users || []);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
       console.error('Error fetching users:', err);
     } finally {
       setLoading(false);

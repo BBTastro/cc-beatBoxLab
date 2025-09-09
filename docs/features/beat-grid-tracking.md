@@ -81,6 +81,7 @@ Users struggle to maintain consistency in long-term goal achievement due to:
 - **Category Management**: Reuse and suggest previously used tags
 - **Edit/Delete Operations**: Full CRUD operations on beat details
 - **Copy Functionality**: Duplicate successful daily patterns to other days
+- **Phase Management**: Support for challenges up to 91 days per phase with navigation
 
 ## User Interface Specifications
 

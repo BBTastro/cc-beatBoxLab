@@ -15,7 +15,8 @@ beatBox is a comprehensive goal tracking application featuring:
 3. **Rewards System** - Three-tier achievement motivation (Planned→Active→Achieved)
 4. **Motivational Statements** - Structured personal inspiration framework
 5. **Allies Network** - Multi-platform support system management
-6. **User Authentication** - Google OAuth via Better Auth
+6. **Move System** - Six-type movement framework for creative transformation and goal achievement
+7. **User Authentication** - Google OAuth via Better Auth
 
 ### Technical Stack
 - **Frontend**: Next.js 15, React 19, TypeScript
@@ -30,6 +31,7 @@ beatBox is a comprehensive goal tracking application featuring:
 - `/rewards` - Achievement reward management
 - `/motivation` - Personal motivational statements
 - `/allies` - Support network organization  
+- `/move` - Six-type movement framework with AI-powered guidance
 - `/settings` - Challenge configuration
 - `/about` - Application information
 

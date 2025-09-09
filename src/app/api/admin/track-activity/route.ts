@@ -4,14 +4,21 @@ import { userSessions, userActivity } from "@/lib/schema";
 import { isAdmin } from "@/lib/admin";
 import { eq, and } from "drizzle-orm";
 import { nanoid } from "nanoid";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
-    // Get user email from headers (set by auth middleware)
-    const userEmail = request.headers.get("x-user-email");
+    // Get user session
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     
     // Check if user is admin
-    if (!isAdmin(userEmail)) {
+    if (!isAdmin(session.user.email)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -63,11 +70,17 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    // Get user email from headers (set by auth middleware)
-    const userEmail = request.headers.get("x-user-email");
+    // Get user session
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     
     // Check if user is admin
-    if (!isAdmin(userEmail)) {
+    if (!isAdmin(session.user.email)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

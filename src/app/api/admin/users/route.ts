@@ -3,14 +3,21 @@ import { db } from "@/lib/db";
 import { user, userSessions, userActivity } from "@/lib/schema";
 import { isAdmin } from "@/lib/admin";
 import { eq, desc, count, sql } from "drizzle-orm";
+import { auth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    // Get user email from headers (set by auth middleware)
-    const userEmail = request.headers.get("x-user-email");
+    // Get user session
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     
     // Check if user is admin
-    if (!isAdmin(userEmail)) {
+    if (!isAdmin(session.user.email)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

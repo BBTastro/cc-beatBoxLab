@@ -35,10 +35,30 @@ export async function trackUserSignIn(
   ipAddress?: string,
   userAgent?: string
 ): Promise<string> {
-  const sessionId = nanoid();
-  
   try {
-    const response = await fetch('/api/admin/track-activity', {
+    // Create session first
+    const sessionResponse = await fetch('/api/user-sessions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        email,
+        ipAddress,
+        userAgent,
+      }),
+    });
+
+    let sessionId = nanoid(); // fallback session ID
+    
+    if (sessionResponse.ok) {
+      const sessionData = await sessionResponse.json();
+      sessionId = sessionData.session.id;
+    }
+
+    // Track sign-in activity
+    const activityResponse = await fetch('/api/track-activity', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,14 +76,14 @@ export async function trackUserSignIn(
       }),
     });
 
-    if (!response.ok) {
-      console.error('Failed to track user sign-in:', await response.text());
+    if (!activityResponse.ok) {
+      console.error('Failed to track user sign-in activity:', await activityResponse.text());
     }
 
     return sessionId;
   } catch (error) {
     console.error('Error tracking user sign-in:', error);
-    return sessionId; // Return sessionId even if tracking fails
+    return nanoid(); // Return fallback sessionId even if tracking fails
   }
 }
 
@@ -76,7 +96,7 @@ export async function trackUserSignOut(
   sessionId: string
 ): Promise<void> {
   try {
-    const response = await fetch('/api/admin/track-activity', {
+    const response = await fetch('/api/track-activity', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -107,7 +127,7 @@ export async function trackPageVisit(
   sessionId?: string
 ): Promise<void> {
   try {
-    const response = await fetch('/api/admin/track-activity', {
+    const response = await fetch('/api/track-activity', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +140,7 @@ export async function trackPageVisit(
         sessionId,
         metadata: {
           visitTime: new Date().toISOString(),
-          referrer: document.referrer || undefined,
+          referrer: typeof document !== 'undefined' ? document.referrer || undefined : undefined,
         },
       }),
     });
@@ -145,7 +165,7 @@ export async function trackUserAction(
   metadata?: Record<string, any>
 ): Promise<void> {
   try {
-    const response = await fetch('/api/admin/track-activity', {
+    const response = await fetch('/api/track-activity', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -174,18 +194,13 @@ export async function trackUserAction(
 
 /**
  * Check if user is returning (has previous sessions)
+ * Note: This function is not currently used but could be implemented
+ * with a separate endpoint if needed for non-admin users
  */
 export async function isReturningUser(userId: string): Promise<boolean> {
-  try {
-    const response = await fetch(`/api/admin/sessions?userId=${userId}&limit=1`);
-    if (response.ok) {
-      const data = await response.json();
-      return data.sessions && data.sessions.length > 0;
-    }
-  } catch (error) {
-    console.error('Error checking returning user:', error);
-  }
-  return false;
+  // For now, we'll assume all users are returning users
+  // This could be implemented with a separate endpoint if needed
+  return true;
 }
 
 /**

@@ -127,6 +127,8 @@ export async function trackPageVisit(
   sessionId?: string
 ): Promise<void> {
   try {
+    console.log('Tracking page visit:', { userId, email, pageUrl, sessionId });
+    
     const response = await fetch('/api/track-activity', {
       method: 'POST',
       headers: {
@@ -146,7 +148,11 @@ export async function trackPageVisit(
     });
 
     if (!response.ok) {
-      console.error('Failed to track page visit:', await response.text());
+      const errorText = await response.text();
+      console.error('Failed to track page visit:', errorText);
+      console.error('Response status:', response.status);
+    } else {
+      console.log('Page visit tracked successfully');
     }
   } catch (error) {
     console.error('Error tracking page visit:', error);

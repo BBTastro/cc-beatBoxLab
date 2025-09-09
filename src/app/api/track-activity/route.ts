@@ -17,8 +17,11 @@ export async function POST(request: NextRequest) {
       metadata = {} 
     } = body;
 
+    console.log("Track activity request:", { userId, email, activityType, pageUrl, action, sessionId });
+
     // Validate required fields
     if (!userId || !email || !activityType) {
+      console.error("Missing required fields:", { userId, email, activityType });
       return NextResponse.json(
         { error: "Missing required fields: userId, email, activityType" },
         { status: 400 }
@@ -27,6 +30,8 @@ export async function POST(request: NextRequest) {
 
     // Create activity record
     const activityId = nanoid();
+    console.log("Creating activity record with ID:", activityId);
+    
     const newActivity = await db.insert(userActivity).values({
       id: activityId,
       userId,
@@ -39,12 +44,18 @@ export async function POST(request: NextRequest) {
       timestamp: new Date(),
     }).returning();
 
+    console.log("Activity record created successfully:", newActivity[0]);
+
     return NextResponse.json({ 
       success: true, 
       activity: newActivity[0] 
     });
   } catch (error) {
     console.error("Track activity API error:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

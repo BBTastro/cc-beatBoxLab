@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AuthenticationPage } from "@/components/auth/authentication-page";
+import { AdminPanel } from "@/components/admin/admin-panel";
 
 interface ChallengeCardProps {
   challenge: Challenge;
@@ -1119,6 +1120,11 @@ function SettingsContent() {
         <div>
           <h1 className="text-3xl font-bold">Settings</h1>
         </div>
+
+        {/* Admin Panel */}
+        {session?.user?.email && isAdmin(session.user.email) && (
+          <AdminPanel isAdmin={true} userEmail={session.user.email} />
+        )}
 
         {/* Challenge Management */}
         <Card>

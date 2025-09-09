@@ -175,3 +175,36 @@ export const challengeTemplates = pgTable("challengeTemplates", {
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 });
+
+// Admin user tracking tables
+export const userSessions = pgTable("userSessions", {
+  id: text("id").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  email: text("email").notNull(),
+  signInAt: timestamp("signInAt").notNull().defaultNow(),
+  signOutAt: timestamp("signOutAt"),
+  sessionDuration: integer("sessionDuration"), // in minutes
+  ipAddress: text("ipAddress"),
+  userAgent: text("userAgent"),
+  isActive: boolean("isActive").default(true),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+});
+
+export const userActivity = pgTable("userActivity", {
+  id: text("id").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  email: text("email").notNull(),
+  activityType: text("activityType").notNull(), // 'sign_in', 'page_visit', 'return_visit', 'action'
+  pageUrl: text("pageUrl"),
+  action: text("action"), // specific action taken
+  sessionId: text("sessionId")
+    .references(() => userSessions.id, { onDelete: "set null" }),
+  metadata: jsonb("metadata").default({}), // additional data
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+});

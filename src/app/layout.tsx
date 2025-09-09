@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EmailValidator } from "@/components/auth/email-validator";
 import { GlobalChatbot } from "@/components/global-chatbot";
+import { UserTrackingProvider } from "@/components/user-tracking-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,12 +41,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <EmailValidator>
-            <SiteHeader />
-            <main className="pb-16">
-              {children}
-            </main>
-            <SiteFooter />
-            <GlobalChatbot />
+            <UserTrackingProvider>
+              <SiteHeader />
+              <main className="pb-16">
+                {children}
+              </main>
+              <SiteFooter />
+              <GlobalChatbot />
+            </UserTrackingProvider>
           </EmailValidator>
         </ThemeProvider>
       </body>

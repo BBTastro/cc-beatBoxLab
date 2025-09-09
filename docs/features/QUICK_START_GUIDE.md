@@ -8,7 +8,7 @@ Welcome to stepBox! This guide will get you up and running with your first chall
 
 ## Step 2: Create Your First Challenge
 1. **Access Settings**: Click the hamburger menu (☰) in the top right corner, then select **"Settings"**
-   - *Alternative: Click "+ New Challenge" on the beats or Details tab*
+   - *Alternative: Click "+ New Challenge" on the steps or Details tab*
 
 2. **Start New Challenge**: Click **"+ New Challenge"** button
 
@@ -22,8 +22,8 @@ Welcome to stepBox! This guide will get you up and running with your first chall
    - Your challenge is now active and ready to track!
 
 ## Step 3: Add Your First Entries
-1. **Navigate to Beats**: Go to the **"beats"** or **"Details"** tab
-2. **Add Entries**: Create stepBox entries for **September 1 - September 9**
+1. **Navigate to steps**: Go to the **"steps"** or **"Details"** tab
+2. **Add Entries**: Create stepBox entries for **September 1 - September 10**
    - Each entry represents a day of progress toward your €100,000 goal
    - Add details about what you accomplished each day
    - Use categories/tags to organize your entries (e.g., "work", "networking", "learning")

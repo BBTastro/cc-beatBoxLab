@@ -1,0 +1,771 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Enhanced beatBox-specific design tokens */
+  
+  /* Brand Colors */
+  --boxtime-accent: #9ae6b4;
+  --boxtime-accent-hover: #81d4a0;
+  --boxtime-accent-active: #68cc8b;
+  
+  /* Success/Status Colors */
+  --color-success: oklch(0.7 0.15 145);
+  --color-success-foreground: oklch(0.98 0.01 145);
+  --color-warning: oklch(0.75 0.15 85);
+  --color-warning-foreground: oklch(0.1 0.01 85);
+  --color-info: oklch(0.7 0.12 220);
+  --color-info-foreground: oklch(0.98 0.01 220);
+  
+  /* Semantic Spacing Scale */
+  --space-px: 1px;
+  --space-0: 0;
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-2-5: 10px;
+  --space-3: 12px;
+  --space-3-5: 14px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  
+  /* Typography Scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  
+  /* Enhanced Transitions */
+  --transition-smooth: 220ms cubic-bezier(.2,.8,.2,1);
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Enhanced Shadow System */
+  --shadow-subtle: 0 1px 2px rgba(0,0,0,.1), 0 2px 8px rgba(0,0,0,.05);
+  --shadow-soft: 0 2px 8px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-medium: 0 4px 12px rgba(0,0,0,.1), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-large: 0 8px 24px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.08);
+  --shadow-glow: 0 0 20px rgba(var(--primary-rgb), 0.3);
+  --shadow-focus: 0 0 0 3px rgba(var(--ring-rgb), 0.3);
+  
+  /* Component-specific tokens */
+  --button-height-sm: 2rem;
+  --button-height-md: 2.25rem;
+  --button-height-lg: 2.5rem;
+  --input-height-sm: 2rem;
+  --input-height-md: 2.25rem;
+  --input-height-lg: 2.5rem;
+  
+  /* Progress Grid specific */
+  --progress-cell-size: 2rem;
+  --progress-cell-gap: 0.5rem;
+  --progress-week-gap: 1rem;
+  --progress-streak-ring: 2px solid var(--color-success);
+  
+  /* Animation durations */
+  --duration-fast: 150ms;
+  --duration-normal: 220ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.21 0.006 285.885);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.705 0.015 286.067);
+  
+  /* RGB variants for shadows and effects */
+  --primary-rgb: 54, 54, 54;
+  --ring-rgb: 140, 140, 140;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.21 0.006 285.885);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.705 0.015 286.067);
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.92 0.004 286.32);
+  --primary-foreground: oklch(0.21 0.006 285.885);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.552 0.016 285.938);
+  
+  /* RGB variants for dark theme shadows and effects */
+  --primary-rgb: 230, 230, 235;
+  --ring-rgb: 118, 118, 128;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.552 0.016 285.938);
+}
+
+/* Dieter Herman Theme - Warm, tactile design with purposeful accents */
+.dieter-herman {
+  /* Neutrals — warm, tactile */
+  --ink: #0E0E0E;           /* main text, icons */
+  --ink-2: #2A2A2A;         /* subdued text */
+  --canvas: #D6CFBF;        /* page background (sand) */
+  --panel: #CAC1AF;         /* cards/tiles */
+  --surface: #ECE7DE;       /* raised surfaces */
+  --line: #A79E8C;          /* rules, separators */
+
+  /* Accents — sparse, purposeful */
+  --dh-accent: #F04E23;     /* safety orange dot/cta */
+  --accent-ink: #3A0F06;    /* text on orange */
+  --olive: #6D7B56;         /* rare status hint */
+
+  /* Monochrome anchors */
+  --white: #FFFFFF;
+  --black: #000000;
+
+  /* Focus & states (derived) */
+  --focus: #F04E23;         /* reuse accent for focus ring */
+  --hover: #D64520;         /* accent hover/darken ~10% */
+  --pressed: #B53A1B;       /* accent pressed */
+  --muted-dot: #9F9F9F;     /* tiny indicators */
+
+  /* Map to existing theme variables */
+  --background: var(--canvas);
+  --foreground: var(--ink);
+  --card: var(--panel);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--dh-accent);
+  --primary-foreground: var(--accent-ink);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--ink-2);
+  --muted: var(--panel);
+  --muted-foreground: var(--ink-2);
+  --accent: var(--dh-accent);
+  --accent-foreground: var(--accent-ink);
+  --destructive: #dc2626;
+  --destructive-foreground: var(--white);
+  --border: var(--line);
+  --input: var(--surface);
+  --ring: var(--focus);
+
+  /* RGB variants for shadows and effects */
+  --primary-rgb: 240, 78, 35;
+  --ring-rgb: 240, 78, 35;
+
+  /* Sidebar colors */
+  --sidebar: var(--panel);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--dh-accent);
+  --sidebar-primary-foreground: var(--accent-ink);
+  --sidebar-accent: var(--surface);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--focus);
+}
+
+/* Dieter Herman Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .dieter-herman {
+    --canvas: #2A2825;
+    --panel: #3A3833;
+    --surface: #46433E;
+    --line: #6D665C;
+    --ink: #F7F6F3;
+    --ink-2: #D7D2C7;
+
+    /* Update mapped variables for dark mode */
+    --background: var(--canvas);
+    --foreground: var(--ink);
+    --card: var(--panel);
+    --card-foreground: var(--ink);
+    --popover: var(--surface);
+    --popover-foreground: var(--ink);
+    --secondary-foreground: var(--ink-2);
+    --muted-foreground: var(--ink-2);
+    --sidebar-foreground: var(--ink);
+    --sidebar-accent-foreground: var(--ink);
+  }
+}
+
+/* Force dark mode for Dieter Herman theme when .dieter-herman.dark is applied */
+.dieter-herman.dark {
+  --canvas: #2A2825;
+  --panel: #3A3833;
+  --surface: #46433E;
+  --line: #6D665C;
+  --ink: #F7F6F3;
+  --ink-2: #D7D2C7;
+
+  /* Update mapped variables for forced dark mode */
+  --background: var(--canvas);
+  --foreground: var(--ink);
+  --card: var(--panel);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --secondary-foreground: var(--ink-2);
+  --muted-foreground: var(--ink-2);
+  --sidebar-foreground: var(--ink);
+  --sidebar-accent-foreground: var(--ink);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-geist-sans);
+  }
+  
+  /* Smooth scrolling for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* BeatBox specific styles */
+  .beat-completed {
+    background-color: black;
+    color: white;
+  }
+
+  .dark .beat-completed {
+    background-color: white;
+    color: black;
+  }
+
+  .beat-pending {
+    background-color: var(--surface, var(--secondary));
+    border: 1px solid var(--border);
+  }
+
+  .beat-future {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    opacity: 0.6;
+  }
+
+  /* Transitions */
+  * {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-duration: 220ms;
+  }
+
+  /* Custom scrollbar for Dieter Herman theme */
+  .dieter-herman ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .dieter-herman ::-webkit-scrollbar-track {
+    background: var(--muted);
+  }
+
+  .dieter-herman ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+
+  .dieter-herman ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+}
+
+/* Rainbow gradient animation for celebrate milestones */
+.rainbow-gradient {
+  background: linear-gradient(
+    45deg,
+    #ff6b6b,
+    #4ecdc4,
+    #45b7d1,
+    #96ceb4,
+    #feca57,
+    #ff9ff3,
+    #54a0ff,
+    #5f27cd
+  );
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow-shift 8s ease-in-out infinite;
+}
+
+@keyframes rainbow-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@layer components {
+  /* beatBox-specific animations */
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse-subtle {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: .8;
+    }
+  }
+  
+  /* Card hover effects */
+  .card-hover {
+    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-subtle);
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    
+    .animate-pulse, .animate-pulse-subtle {
+      animation: none !important;
+    }
+  }
+}
+
+/* Celebration animation styles */
+@keyframes celebration {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.celebration {
+  animation: celebration 0.6s ease-in-out;
+}
+
+/* Grid layout utilities - 7 columns max, 13 rows max */
+.beat-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(13, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  justify-items: center;
+  justify-content: center;
+  animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Dynamic grid columns for centering when there are fewer beats */
+.beat-grid.grid-1 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  max-width: fit-content;
+}
+
+.beat-grid.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr;
+  max-width: fit-content;
+}
+
+.beat-grid.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr;
+  max-width: fit-content;
+}
+
+.beat-grid.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr;
+  max-width: fit-content;
+}
+
+.beat-grid.grid-5 {
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: 1fr;
+  max-width: fit-content;
+}
+
+.beat-grid.grid-6 {
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 1fr;
+  max-width: fit-content;
+}
+
+.beat-grid.grid-7 {
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 1fr;
+  max-width: fit-content;
+}
+
+/* For 91 beats (7x13 grid) */
+.beat-grid.grid-91 {
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(13, 1fr);
+  max-width: 100%;
+}
+
+/* Beat grid phase transition animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+.beat-grid.phase-transitioning {
+  animation: slideOut 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Large screens - flexible scaling */
+@media (min-width: 1200px) {
+  .beat-grid {
+    gap: 0.75rem;
+  }
+  
+  .beat-item {
+    min-height: 3.5rem;
+    min-width: 3.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Desktop screens */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .beat-grid {
+    gap: 0.625rem;
+  }
+  
+  .beat-item {
+    min-height: 3rem;
+    min-width: 3rem;
+    font-size: 0.9375rem;
+  }
+}
+
+/* Tablet screens */
+@media (max-width: 1023px) {
+  .beat-grid {
+    gap: 0.5rem;
+  }
+  
+  .beat-item {
+    min-height: 2.5rem;
+    min-width: 2.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .beat-grid {
+    gap: 0.4rem;
+  }
+  
+  .beat-item {
+    min-height: 2.25rem;
+    min-width: 2.25rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .beat-grid {
+    gap: 0.3rem;
+  }
+  
+  /* Override grid columns for mobile - use fewer columns but still center */
+  .beat-grid.grid-1 {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+  
+  .beat-grid.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr;
+  }
+  
+  .beat-grid.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+  }
+  
+  .beat-grid.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr;
+  }
+  
+  .beat-grid.grid-5,
+  .beat-grid.grid-6,
+  .beat-grid.grid-7 {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: 1fr;
+  }
+  
+  /* For 91 beats on mobile, use 5 columns max */
+  .beat-grid.grid-91 {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(19, 1fr); /* 91 beats / 5 columns = 19 rows */
+  }
+  
+  .beat-item {
+    min-height: 2rem;
+    min-width: 2rem;
+    font-size: 0.6875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .beat-grid {
+    gap: 0.25rem;
+  }
+  
+  /* Override grid columns for small mobile - use even fewer columns but still center */
+  .beat-grid.grid-1 {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+  
+  .beat-grid.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr;
+  }
+  
+  .beat-grid.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+  }
+  
+  .beat-grid.grid-4,
+  .beat-grid.grid-5,
+  .beat-grid.grid-6,
+  .beat-grid.grid-7 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr;
+  }
+  
+  /* For 91 beats on small mobile, use 4 columns max */
+  .beat-grid.grid-91 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(23, 1fr); /* 91 beats / 4 columns = 23 rows */
+  }
+  
+  .beat-item {
+    min-height: 1.75rem;
+    min-width: 1.75rem;
+    font-size: 0.625rem;
+  }
+}
+
+/* Beat item styles */
+.beat-item {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  border: 1px solid transparent;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+}
+
+
+.beat-item:hover:not(.beat-future) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.beat-item.beat-future {
+  cursor: not-allowed;
+}
+
+/* Phase navigation styles */
+.phase-nav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.phase-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.phase-badge:hover {
+  background-color: var(--muted);
+}
+
+.phase-badge.active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.phase-badge.final {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border-color: var(--accent);
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}

@@ -1121,11 +1121,6 @@ function SettingsContent() {
           <h1 className="text-3xl font-bold">Settings</h1>
         </div>
 
-        {/* Admin Panel */}
-        {session?.user?.email && isAdmin(session.user.email) && (
-          <AdminPanel isAdmin={true} userEmail={session.user.email} />
-        )}
-
         {/* Challenge Management */}
         <Card>
           <CardHeader>
@@ -1234,6 +1229,11 @@ function SettingsContent() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Admin Panel */}
+        {session?.user?.email && isAdmin(session.user.email) && (
+          <AdminPanel isAdmin={true} userEmail={session.user.email} />
+        )}
 
         {/* Data Management */}
         <Card className="border-destructive/20">

@@ -35,9 +35,9 @@ export function AuthenticationPage() {
             <div className="space-y-8">
               {/* Title and Description */}
               <div className="space-y-4">
-                <h1 className="text-4xl font-bold">beatBox</h1>
+                <h1 className="text-4xl font-bold">stepBox</h1>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  beatBox helps creators show up daily for one big goal. A grid turns daily work into visible momentum across tabs. Tap a day, log what you did, keep your streak, and{" "}
+                  stepBox helps creators show up daily for one big goal. A grid turns daily work into visible momentum across tabs. Tap a day, log what you did, keep your streak, and{" "}
                   <span className="inline-block animate-pulse bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
                     celebrate milestones
                   </span>{" "}

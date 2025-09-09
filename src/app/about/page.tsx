@@ -129,7 +129,7 @@ export default function AboutPage() {
           <div className="lg:col-span-1">
             <div className="prose prose-sm max-w-none">
               <p className="text-lg leading-relaxed">
-                <strong>beatBox</strong> helps creators show up daily for one big goal.
+                <strong>stepBox</strong> helps creators show up daily for one big goal.
                 A grid turns daily work into visible momentum across tabs.
                 Tap a day, log what you did, keep your streak, and{" "}
                 <span className="rainbow-gradient">celebrate milestones</span> on the way to meet your goals!

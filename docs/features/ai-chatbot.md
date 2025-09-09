@@ -2,13 +2,13 @@
 
 ## Overview
 
-The AI Chatbot feature provides intelligent, personalized assistance throughout the user's goal achievement journey. Powered by OpenAI integration, the chatbot offers contextual support, progress insights, and motivational guidance based on the user's specific challenge data, beat completion history, and personal goals.
+The AI Chatbot feature provides intelligent, personalized assistance throughout the user's goal achievement journey. Powered by OpenAI integration, the chatbot offers contextual support, progress insights, and motivational guidance based on the user's specific challenge data, beat completion history, rewards status, and personal motivational statements.
 
 ## What is the AI Chatbot
 
 ### Core Workflow
 
-1. **Context-Aware Conversations**: AI assistant with access to user's challenge progress, rewards, and motivational statements
+1. **Context-Aware Conversations**: AI assistant with access to user's challenge progress, beat details, rewards, and motivational statements
 2. **Intelligent Guidance**: Personalized advice based on completion patterns and goal context
 3. **Progress Analysis**: Insights into streak patterns, completion rates, and achievement trends
 4. **Motivational Support**: Encouragement tailored to individual progress and challenges
@@ -17,7 +17,7 @@ The AI Chatbot feature provides intelligent, personalized assistance throughout 
 ### Key Components
 
 - **Chat Interface**: Clean, conversational UI with message history
-- **Context Integration**: AI system with access to user's beatBox data
+- **Context Integration**: AI system with access to user's stepBox data
 - **Message Formatting**: Rich text rendering with lists, headers, and structured content
 - **Session Management**: Persistent conversations with clear and reset functionality
 - **Progress Insights**: Data-driven analysis and recommendations
@@ -76,7 +76,7 @@ Goal achievers need:
 ### Supporting Features
 
 - **OpenAI Integration**: GPT-powered conversational AI with context awareness
-- **Challenge Data Access**: Real-time integration with user's beats, rewards, and motivation data
+- **Challenge Data Access**: Real-time integration with user's beats, beat details, rewards, and motivational statements
 - **Rich Message Formatting**: Support for structured content, lists, and headers
 - **Conversation History**: Persistent chat sessions with message history
 - **Context Switching**: Ability to clear conversations and start fresh

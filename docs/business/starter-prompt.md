@@ -63,7 +63,7 @@ The project already includes several shadcn/ui components (button, dialog, avata
 
 ## What I Want to Build
 
-Review beatboxFeatures.md in /docs/context/beatboxFeatures.md. Review screengrabs in /docs/context/beatboxDesign for complete page UI breakdown and design expectations.
+Review stepboxFeatures.md in /docs/context/stepboxFeatures.md. Review screengrabs in /docs/context/stepboxDesign for complete page UI breakdown and design expectations.
 
 
 

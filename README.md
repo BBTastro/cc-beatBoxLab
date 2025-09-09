@@ -1,4 +1,4 @@
-# beatBox - Daily Goal Tracking & Achievement System
+# stepBox - Daily Goal Tracking & Achievement System
 
 A comprehensive goal tracking application with AI-powered assistance, built with Next.js, Better Auth, and OpenAI integration. Transform your long-term goals into manageable daily actions through visual beat grids, structured rewards, motivational frameworks, and intelligent support systems.
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Motivational Statements feature empowers users to create, manage, and reflect on personal inspirational content that drives their daily actions. Users can craft meaningful statements that capture their "why," define collaboration needs, and serve as consistent reminders of their core purposes and values.
+The Motivational Statements feature empowers users to create, manage, and reflect on personal inspirational content that drives their daily actions. Users can craft meaningful statements with three-section structure that capture their core motivation, articulate their "why," and define collaboration needs with supporters.
 
 ## What are Motivational Statements
 

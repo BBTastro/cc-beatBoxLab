@@ -293,46 +293,49 @@ function DetailEntry({ detail, beatNumber, beatDate, onViewDetail, showCount = t
   };
 
   return (
-    <Card className="mb-4 cursor-pointer hover:shadow-md transition-shadow" onClick={handleClick}>
-      <CardHeader className="pb-3">
-        <div className="space-y-2">
-          {/* Day count above date */}
-          {showCount && beatNumber && (
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-xs">Day {beatNumber}</Badge>
-            </div>
-          )}
-          
-          {/* Date and tags row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {showDate && (
-                <>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    {formattedDate}
-                  </span>
-                </>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {detail.category && (
-                <Badge variant="secondary" className="text-xs">
-                  <Tag className="h-3 w-3 mr-1" />
-                  {detail.category}
-                </Badge>
-              )}
-            </div>
-          </div>
-          
-          {/* Detail preview */}
-          <div className="pt-1">
-            <p className="text-sm text-muted-foreground line-clamp-2">
+    <Card className="group cursor-pointer transition-all duration-200 hover:shadow-md hover:shadow-primary/5 hover:border-primary/20 border" onClick={handleClick}>
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          {/* Main content with better typography */}
+          <div className="leading-relaxed">
+            <p className="text-foreground/90 text-sm leading-6 group-hover:text-foreground transition-colors line-clamp-3">
               {detail.content}
             </p>
           </div>
+          
+          {/* Metadata section with improved layout */}
+          {(showCount && beatNumber) || (showDate && isValidDate) || detail.category ? (
+            <div className="flex items-center justify-between gap-3 pt-1">
+              {/* Left side: Date and day count */}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                {showDate && isValidDate && (
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="h-3 w-3" />
+                    <span className="font-medium">
+                      {formattedDate}
+                    </span>
+                  </div>
+                )}
+                {showCount && beatNumber && (
+                  <Badge variant="outline" className="text-xs h-5 px-2 font-medium">
+                    Day {beatNumber}
+                  </Badge>
+                )}
+              </div>
+              
+              {/* Right side: Category tag */}
+              <div className="flex-shrink-0">
+                {detail.category && (
+                  <Badge variant="secondary" className="text-xs h-5 px-2 bg-secondary/70 hover:bg-secondary transition-colors">
+                    <Tag className="h-2.5 w-2.5 mr-1" />
+                    {detail.category}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          ) : null}
         </div>
-      </CardHeader>
+      </CardContent>
     </Card>
   );
 }
@@ -582,31 +585,62 @@ function FilterPanel({ filters, onFiltersChange, availableCategories }: FilterPa
           </button>
           {isDisplayAccordionOpen && (
             <div className="space-y-2 pl-2">
-              <div className="flex gap-1">
-                <Button
-                  type="button"
-                  variant={filters.showCount ? "default" : "outline"}
-                  size="sm"
-                  className="text-xs h-6"
-                  onClick={() => onFiltersChange({
-                    ...filters,
-                    showCount: !filters.showCount,
-                  })}
-                >
-                  Count
-                </Button>
-                <Button
-                  type="button"
-                  variant={filters.showDate ? "default" : "outline"}
-                  size="sm"
-                  className="text-xs h-6"
-                  onClick={() => onFiltersChange({
-                    ...filters,
-                    showDate: !filters.showDate,
-                  })}
-                >
-                  Date
-                </Button>
+              <div className="space-y-2">
+                {/* Display Options Row */}
+                <div className="flex gap-1">
+                  <Button
+                    type="button"
+                    variant={filters.showCount ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs h-6"
+                    onClick={() => onFiltersChange({
+                      ...filters,
+                      showCount: !filters.showCount,
+                    })}
+                  >
+                    Count
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={filters.showDate ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs h-6"
+                    onClick={() => onFiltersChange({
+                      ...filters,
+                      showDate: !filters.showDate,
+                    })}
+                  >
+                    Date
+                  </Button>
+                </div>
+                
+                {/* Sorting Options Row */}
+                <div className="flex gap-1">
+                  <Button
+                    type="button"
+                    variant={filters.sortOrder === 'asc' || filters.sortOrder === 'desc' ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs h-6"
+                    onClick={() => onFiltersChange({
+                      ...filters,
+                      sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc',
+                    })}
+                  >
+                    {filters.sortOrder === 'asc' ? 'A→Z' : filters.sortOrder === 'desc' ? 'Z→A' : 'A→Z'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={filters.sortOrder === 'first-last' || filters.sortOrder === 'last-first' ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs h-6"
+                    onClick={() => onFiltersChange({
+                      ...filters,
+                      sortOrder: filters.sortOrder === 'first-last' ? 'last-first' : 'first-last',
+                    })}
+                  >
+                    {filters.sortOrder === 'first-last' ? '1→N' : filters.sortOrder === 'last-first' ? 'N→1' : '1→N'}
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -625,7 +659,6 @@ function DetailsContent() {
     addBeatDetail,
     updateBeatDetail,
     deleteBeatDetail,
-    getBeatsWithDetails,
   } = useChallengeContext();
 
   const [filters, setFilters] = useState<DetailFilters>({
@@ -634,6 +667,7 @@ function DetailsContent() {
     categories: [],
     showCount: true,
     showDate: true,
+    sortOrder: 'asc',
   });
 
   // State for detail view dialog
@@ -642,7 +676,6 @@ function DetailsContent() {
   const [selectedBeatDate, setSelectedBeatDate] = useState<Date | undefined>();
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
 
-  const beatsWithDetails = getBeatsWithDetails();
   
   // Get all available categories
   const availableCategories = Array.from(
@@ -662,11 +695,28 @@ function DetailsContent() {
 
     return true;
   }).sort((a, b) => {
-    // Sort by beat date (most recent first)
-    const beatA = beats.find(beat => beat.id === a.beatId);
-    const beatB = beats.find(beat => beat.id === b.beatId);
-    if (!beatA || !beatB) return 0;
-    return beatB.date.getTime() - beatA.date.getTime();
+    if (filters.sortOrder === 'asc' || filters.sortOrder === 'desc') {
+      // Sort alphabetically by content
+      const contentA = a.content.toLowerCase();
+      const contentB = b.content.toLowerCase();
+      return filters.sortOrder === 'asc' 
+        ? contentA.localeCompare(contentB)
+        : contentB.localeCompare(contentA);
+    } else if (filters.sortOrder === 'first-last' || filters.sortOrder === 'last-first') {
+      // Sort by day count
+      const beatA = beats.find(beat => beat.id === a.beatId);
+      const beatB = beats.find(beat => beat.id === b.beatId);
+      if (!beatA || !beatB) return 0;
+      return filters.sortOrder === 'first-last'
+        ? beatA.dayNumber - beatB.dayNumber
+        : beatB.dayNumber - beatA.dayNumber;
+    } else {
+      // Default: Sort by beat date (most recent first)
+      const beatA = beats.find(beat => beat.id === a.beatId);
+      const beatB = beats.find(beat => beat.id === b.beatId);
+      if (!beatA || !beatB) return 0;
+      return beatB.date.getTime() - beatA.date.getTime();
+    }
   });
 
   const handleAddDetail = async (content: string, category?: string, date?: Date) => {

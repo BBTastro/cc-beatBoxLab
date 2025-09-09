@@ -1,4 +1,4 @@
-// Core BeatBox Types and Interfaces
+// Core StepBox Types and Interfaces
 
 export interface User {
   id: string;
@@ -163,6 +163,7 @@ export interface DetailFilters {
   categories: string[];
   showCount: boolean;
   showDate: boolean;
+  sortOrder: 'asc' | 'desc' | 'first-last' | 'last-first';
 }
 
 // Grid display configuration
@@ -218,7 +219,7 @@ export interface StoredMoveConcept extends Omit<MoveConcept, 'createdAt' | 'upda
 }
 
 // Event types for cross-component communication
-export type BeatBoxEvent = 
+export type StepBoxEvent = 
   | 'challenge-updated'
   | 'beat-completed'
   | 'beat-uncompleted'
@@ -337,16 +338,16 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   push: true,
 };
 
-// Storage keys pattern: beatbox-{datatype}-{userId}[-{challengeId}]
+// Storage keys pattern: stepbox-{datatype}-{userId}[-{challengeId}]
 export const STORAGE_KEYS = {
-  CHALLENGES: (userId: string) => `beatbox-challenges-${userId}`,
-  BEATS: (userId: string, challengeId: string) => `beatbox-beats-${userId}-${challengeId}`,
-  BEAT_DETAILS: (userId: string, challengeId: string) => `beatbox-beat-details-${userId}-${challengeId}`,
-  REWARDS: (userId: string, challengeId: string) => `beatbox-rewards-${userId}-${challengeId}`,
-  STATEMENTS: (userId: string) => `beatbox-statements-${userId}`,
-  ALLIES: (userId: string) => `beatbox-allies-${userId}`,
-  MOVES: (userId: string) => `beatbox-moves-${userId}`,
-  THEME: 'beatbox-theme',
+  CHALLENGES: (userId: string) => `stepbox-challenges-${userId}`,
+  BEATS: (userId: string, challengeId: string) => `stepbox-beats-${userId}-${challengeId}`,
+  BEAT_DETAILS: (userId: string, challengeId: string) => `stepbox-beat-details-${userId}-${challengeId}`,
+  REWARDS: (userId: string, challengeId: string) => `stepbox-rewards-${userId}-${challengeId}`,
+  STATEMENTS: (userId: string) => `stepbox-statements-${userId}`,
+  ALLIES: (userId: string) => `stepbox-allies-${userId}`,
+  MOVES: (userId: string) => `stepbox-moves-${userId}`,
+  THEME: 'stepbox-theme',
   DIETER_HERMAN: 'dieter-herman-theme',
-  DEFAULT_CHALLENGE: (userId: string) => `beatbox-default-challenge-${userId}`,
+  DEFAULT_CHALLENGE: (userId: string) => `stepbox-default-challenge-${userId}`,
 } as const;

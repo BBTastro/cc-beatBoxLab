@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "beatBox - Goal Tracking",
+  title: "stepBox - Goal Tracking",
   description:
     "Transform daily work into visible momentum through a simple beat-tracking interface where users tap days, log their work, maintain streaks, and celebrate progress.",
 };

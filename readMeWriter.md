@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a comprehensive template and instructions for LLMs to create professional, detailed README files for any software project. The template is based on the beatBox project structure and can be adapted for any technology stack or application type.
+This document provides a comprehensive template and instructions for LLMs to create professional, detailed README files for any software project. The template is based on the stepBox project structure and can be adapted for any technology stack or application type.
 
 ## Template Structure
 
@@ -15,7 +15,7 @@ This document provides a comprehensive template and instructions for LLMs to cre
 
 **Example:**
 ```markdown
-# beatBox - Daily Goal Tracking & Achievement System
+# stepBox - Daily Goal Tracking & Achievement System
 
 A comprehensive goal tracking application with AI-powered assistance, built with Next.js, Better Auth, and OpenAI integration. Transform your long-term goals into manageable daily actions through visual beat grids, structured rewards, motivational frameworks, and intelligent support systems.
 ```

@@ -18,12 +18,12 @@ export async function POST(req: NextRequest) {
     // Return the localStorage key pattern that the client should use
     // The client will need to fetch the actual data from localStorage
     const storageKeys = {
-      challenges: `beatbox-challenges-${userId}`,
-      beats: challengeId ? `beatbox-beats-${userId}-${challengeId}` : null,
-      beatDetails: challengeId ? `beatbox-beat-details-${userId}-${challengeId}` : null,
-      rewards: challengeId ? `beatbox-rewards-${userId}-${challengeId}` : null,
-      statements: `beatbox-statements-${userId}`,
-      defaultChallenge: `beatbox-default-challenge-${userId}`,
+      challenges: `stepbox-challenges-${userId}`,
+      beats: challengeId ? `stepbox-beats-${userId}-${challengeId}` : null,
+      beatDetails: challengeId ? `stepbox-beat-details-${userId}-${challengeId}` : null,
+      rewards: challengeId ? `stepbox-rewards-${userId}-${challengeId}` : null,
+      statements: `stepbox-statements-${userId}`,
+      defaultChallenge: `stepbox-default-challenge-${userId}`,
     };
 
     return NextResponse.json({

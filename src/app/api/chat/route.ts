@@ -178,10 +178,10 @@ USER'S CURRENT CHALLENGE DATA:
 - Progress: ${completedBeats}/${totalBeats} beats (${completionRate}%)
 
 PROGRESS DETAILS:
-- Total Beats: ${totalBeats}
-- Completed Beats: ${completedBeats}
+- Total Steps: ${totalBeats}
+- Completed Steps: ${completedBeats}
 - Completion Rate: ${completionRate}%
-- Recent Beats: ${beatsArray.slice(0, 5).map((beat: any) => `${beat?.date || 'No date'}: ${beat?.completed ? 'Completed' : 'Pending'}`).join(', ')}
+- Recent Steps: ${beatsArray.slice(0, 5).map((beat: any) => `${beat?.date || 'No date'}: ${beat?.completed ? 'Completed' : 'Pending'}`).join(', ')}
 
 RECENT BEAT DETAILS WITH TAGS (last 10 entries):
 ${Array.isArray(beatDetails) ? beatDetails.slice(0, 10).map((detail: any) => {
@@ -278,7 +278,7 @@ ${Array.isArray(motivationalStatements) && motivationalStatements.length > 0 ? m
         onFinish: ({ response }) => {
           console.log('Chat completed successfully:', response);
         },
-        system: `You are the beatBox Assistant, a helpful AI coach for beatBox, a daily goal tracking application.
+        system: `You are the stepBox Assistant, a helpful AI coach for stepBox, a daily goal tracking application.
 
 RESPONSE STYLE:
 - Be extremely concise and direct. Answer ONLY the specific question asked.
@@ -289,8 +289,8 @@ RESPONSE STYLE:
 
 Key concepts:
 - Challenges: Goal-tracking campaigns with specific durations
-- Beats: Individual days in a challenge
-- Beat Details: Daily entries with categories/tags (e.g., "meals", "bad day", "exercise")
+- Steps: Individual days in a challenge
+- Step Details: Daily entries with categories/tags (e.g., "meals", "bad day", "exercise")
 - Motivational Statements: Personal statements that include the statement, why (reasoning), and collaboration (how others can help)
 - Progress tracking and motivation
 
@@ -313,7 +313,7 @@ DATE FORMATTING:
 
 EXAMPLE RESPONSES:
 - "tell me about my meals" → "You have 2 meal entries: Bacon and Eggs and Burger & Fries on 9/9/2025."
-- "bad day" → "You logged 1 bad day entry: 'Alligator in the toilet' on 9/9/2025. You're at 3/7 beats complete (43%)."
+- "bad day" → "You logged 1 bad day entry: 'Alligator in the toilet' on 9/9/2025. You're at 3/7 steps complete (43%)."
 
 CRITICAL INSTRUCTIONS:
 1. You ONLY respond about the user's CURRENT ACTIVE CHALLENGE. Do not discuss past challenges, future challenges, or general topics.
@@ -353,7 +353,7 @@ Be helpful but concise. If users don't have any data yet, encourage them to star
             nonStreamingResult = await generateText({
               model: openai(model),
               messages: convertToModelMessages(formattedMessages),
-              system: `You are the beatBox Assistant, a helpful AI coach for beatBox, a daily goal tracking application.
+              system: `You are the stepBox Assistant, a helpful AI coach for stepBox, a daily goal tracking application.
 
 RESPONSE STYLE:
 - Be extremely concise and direct. Answer ONLY the specific question asked.
@@ -364,8 +364,8 @@ RESPONSE STYLE:
 
 Key concepts:
 - Challenges: Goal-tracking campaigns with specific durations
-- Beats: Individual days in a challenge
-- Beat Details: Daily entries with categories/tags (e.g., "meals", "bad day", "exercise")
+- Steps: Individual days in a challenge
+- Step Details: Daily entries with categories/tags (e.g., "meals", "bad day", "exercise")
 - Motivational Statements: Personal statements that include the statement, why (reasoning), and collaboration (how others can help)
 - Progress tracking and motivation
 
@@ -388,7 +388,7 @@ DATE FORMATTING:
 
 EXAMPLE RESPONSES:
 - "tell me about my meals" → "You have 2 meal entries: Bacon and Eggs and Burger & Fries on 9/9/2025."
-- "bad day" → "You logged 1 bad day entry: 'Alligator in the toilet' on 9/9/2025. You're at 3/7 beats complete (43%)."
+- "bad day" → "You logged 1 bad day entry: 'Alligator in the toilet' on 9/9/2025. You're at 3/7 steps complete (43%)."
 
 CRITICAL INSTRUCTIONS:
 1. You ONLY respond about the user's CURRENT ACTIVE CHALLENGE. Do not discuss past challenges, future challenges, or general topics.

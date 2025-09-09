@@ -73,7 +73,7 @@ export function SiteHeader() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <span className="text-3xl font-bold">
-                beatBox
+                stepBox
               </span>
             </Link>
           </div>

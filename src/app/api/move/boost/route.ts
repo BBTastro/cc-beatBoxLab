@@ -32,7 +32,10 @@ export async function POST(req: NextRequest) {
       moveType, 
       moveTitle, 
       hasMoveContent: !!moveContent,
-      hasMoveAiBoostContent: !!moveAiBoostContent
+      hasMoveAiBoostContent: !!moveAiBoostContent,
+      moveContentLength: moveContent?.length || 0,
+      moveAiBoostContentLength: moveAiBoostContent?.length || 0,
+      promptContextLength: promptContext?.length || 0
     });
     
     // Get user session
@@ -254,12 +257,12 @@ ${Array.isArray(motivationalStatements) && motivationalStatements.length > 0 ? m
     }
 
     // Create system prompt for motivational boost generation
-    const systemPrompt = `You are the beatBox Move Assistant, a motivational AI coach specializing in providing personalized encouragement and strategic guidance for goal achievement.
+    const systemPrompt = `You are the stepBox Move Assistant, a motivational AI coach specializing in providing personalized encouragement and strategic guidance for goal achievement.
 
 Your role is to generate motivational "boosts" that help users overcome challenges and maintain momentum in their goal pursuit.
 
 RESPONSE REQUIREMENTS:
-- Generate a SHORT, CONCISE motivational response of 1-2 sentences maximum
+- Generate a SHORT, CONCISE motivational response of 1-3 sentences maximum
 - Keep it quick, punchy, and to the point - no lengthy explanations
 - ALWAYS reference the user's actual challenge data provided below
 - Be specific to their current challenge title and progress
@@ -276,10 +279,10 @@ MOVE CONCEPT DETAILS:
 - Description: ${moveTitle ? 'Focus on this specific movement approach' : 'General motivation'}
 
 ${moveContent ? `MOVE CONCEPT PRINCIPLES:
-${moveContent}
+${moveContent}` : ''}
 
 ${moveAiBoostContent ? `AI BOOST GUIDANCE:
-${moveAiBoostContent}` : ''}` : ''}
+${moveAiBoostContent}` : ''}
 
 CHALLENGE DATA (USE THIS INFORMATION):
 ${challengeData}
@@ -292,10 +295,12 @@ CRITICAL INSTRUCTIONS:
 2. Create a SHORT, PUNCHY boost that references their specific challenge title and progress
 3. Reference their motivational statements for personalized encouragement
 4. Connect their stated "why" motivations to their current progress and the Move concept
-5. Keep it brief - 1-2 sentences maximum, no lengthy explanations
-6. Do not say they have no active challenge if the data above shows challenge information
-7. Always mention their challenge title and current progress in your response
-8. Make the boost specific to their actual data, not generic advice`;
+5. Incorporate the specific Move concept principles and AI boost guidance into your response
+6. Use the user's additional context to personalize the boost further
+7. Keep it brief - 1-3 sentences maximum, no lengthy explanations
+8. Do not say they have no active challenge if the data above shows challenge information
+9. Always mention their challenge title and current progress in your response
+10. Make the boost specific to their actual data, not generic advice`;
 
     console.log('Generating boost with system prompt length:', systemPrompt.length);
     console.log('Challenge data being sent to AI:', challengeData.substring(0, 500) + '...');

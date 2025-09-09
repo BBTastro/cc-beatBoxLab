@@ -5,7 +5,7 @@ import {
   MotivationalStatement, 
   StoredMotivationalStatement,
   STORAGE_KEYS,
-  BeatBoxEvent
+  StepBoxEvent
 } from '@/lib/types';
 
 interface MotivationContextType {
@@ -21,7 +21,7 @@ interface MotivationContextType {
   refreshData: () => Promise<void>;
   
   // Event system
-  emitEvent: (event: BeatBoxEvent) => void;
+  emitEvent: (event: StepBoxEvent) => void;
 }
 
 const MotivationContext = createContext<MotivationContextType | null>(null);
@@ -44,8 +44,8 @@ export function MotivationProvider({ children, userId }: MotivationProviderProps
   const [isLoading, setIsLoading] = useState(true);
 
   // Event emitter for cross-component communication
-  const emitEvent = useCallback((event: BeatBoxEvent) => {
-    window.dispatchEvent(new CustomEvent(`beatbox-${event}`, { detail: { userId } }));
+  const emitEvent = useCallback((event: StepBoxEvent) => {
+    window.dispatchEvent(new CustomEvent(`stepbox-${event}`, { detail: { userId } }));
   }, [userId]);
 
   // Load data from localStorage

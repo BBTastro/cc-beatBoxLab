@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Move System provides a comprehensive framework for creative transformation and goal achievement through six distinct movement types. Users can explore strategic approaches, optimize their creative flow, and receive AI-powered guidance tailored to their specific movement context and personal challenges.
+The Move System provides a comprehensive framework for creative transformation and goal achievement through six distinct movement types: Strategy, Flow, Create, Build, Strength, and Restore. Users can explore structured approaches, customize movement concepts, and receive AI-powered guidance that integrates their personal challenge data with movement-specific principles.
 
 ## What is the Move System
 
@@ -10,7 +10,7 @@ The Move System provides a comprehensive framework for creative transformation a
 
 1. **Movement Selection**: Choose from six movement types: Strategy, Flow, Create, Build, Strength, and Restore
 2. **Concept Exploration**: Access detailed frameworks and methodologies for each movement type
-3. **AI Boost Generation**: Generate personalized AI guidance based on specific challenges, context, and movement concepts
+3. **AI Boost Generation**: Generate personalized AI guidance that combines personal challenge data with movement-specific principles and user context
 4. **Content Customization**: Edit and adapt movement concepts to personal needs and preferences
 5. **Progress Integration**: Apply movement principles to ongoing goal achievement journeys
 6. **Context-Aware Motivation**: Receive AI-powered boosts that combine personal challenge data with movement-specific principles

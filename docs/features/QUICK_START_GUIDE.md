@@ -1,6 +1,6 @@
-# beatBox Quick Start Guide 🚀
+# stepBox Quick Start Guide 🚀
 
-Welcome to beatBox! This guide will get you up and running with your first challenge in just a few minutes.
+Welcome to stepBox! This guide will get you up and running with your first challenge in just a few minutes.
 
 ## Step 1: Sign In
 - Click **"Sign in with Google"** to get started
@@ -23,7 +23,7 @@ Welcome to beatBox! This guide will get you up and running with your first chall
 
 ## Step 3: Add Your First Entries
 1. **Navigate to Beats**: Go to the **"beats"** or **"Details"** tab
-2. **Add Entries**: Create beatBox entries for **September 1 - September 9**
+2. **Add Entries**: Create stepBox entries for **September 1 - September 9**
    - Each entry represents a day of progress toward your €100,000 goal
    - Add details about what you accomplished each day
    - Use categories/tags to organize your entries (e.g., "work", "networking", "learning")
@@ -45,9 +45,9 @@ Once you've added your initial entries, check out these features:
 ## Step 5: Daily Routine
 **Tomorrow and every day after:**
 
-1. **Sign in** to beatBox
+1. **Sign in** to stepBox
 2. **Complete your work** toward your €100,000 challenge
-3. **Log your progress** by adding a journal entry in that day's beatBox
+3. **Log your progress** by adding a journal entry in that day's stepBox
    - Describe what you accomplished
    - Add relevant categories/tags
    - Track your momentum and insights
@@ -60,7 +60,7 @@ Once you've added your initial entries, check out these features:
 
 ## Pro Tips 💡
 
-### Making the Most of beatBox:
+### Making the Most of stepBox:
 - **Be Specific**: Instead of "worked on project," try "completed market research for 3 hours, identified 5 potential clients"
 - **Use Categories**: Tag your entries (e.g., "sales", "marketing", "product development") to see patterns
 - **Set Rewards**: Create meaningful rewards for milestones to maintain motivation

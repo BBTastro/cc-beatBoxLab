@@ -37,7 +37,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   
-  /* Enhanced beatBox-specific design tokens */
+  /* Enhanced stepBox-specific design tokens */
   
   /* Brand Colors */
   --boxtime-accent: #9ae6b4;
@@ -323,7 +323,7 @@
     outline-offset: 2px;
   }
 
-  /* BeatBox specific styles */
+  /* StepBox specific styles */
   .beat-completed {
     background-color: black;
     color: white;
@@ -405,7 +405,7 @@
 }
 
 @layer components {
-  /* beatBox-specific animations */
+  /* stepBox-specific animations */
   .animate-pulse-subtle {
     animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }

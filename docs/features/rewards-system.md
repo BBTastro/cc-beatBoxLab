@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Rewards System enables users to create, manage, and track achievement-based incentives throughout their challenge journey. Users can set up meaningful rewards tied to their progress, create proof of achievement, and maintain motivation through structured positive reinforcement.
+The Rewards System enables users to create, manage, and track achievement-based incentives throughout their challenge journey. Users can set up meaningful rewards tied to their progress, create proof of achievement documentation, and maintain motivation through structured positive reinforcement with a three-tier status system.
 
 ## What are Rewards
 

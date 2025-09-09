@@ -150,10 +150,10 @@ export function Chatbot({ userId, className }: ChatbotProps) {
     };
 
     // Listen for challenge update events
-    window.addEventListener('beatbox-challenge-updated', handleChallengeUpdate);
+    window.addEventListener('stepbox-challenge-updated', handleChallengeUpdate);
     
     return () => {
-      window.removeEventListener('beatbox-challenge-updated', handleChallengeUpdate);
+      window.removeEventListener('stepbox-challenge-updated', handleChallengeUpdate);
     };
   }, [refreshData]);
   
@@ -436,7 +436,7 @@ export function Chatbot({ userId, className }: ChatbotProps) {
                   <Bot className="h-6 w-6 text-primary" />
                 </div>
                 <div className="flex flex-col">
-                  <div className="font-bold text-lg text-foreground">beatBox Assistant</div>
+                  <div className="font-bold text-lg text-foreground">stepBox Assistant</div>
                   {useFallback && (
                     <div className="text-xs text-amber-600 font-medium">
                       Using fallback mode (organization verification in progress)
@@ -630,7 +630,7 @@ export function Chatbot({ userId, className }: ChatbotProps) {
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about your challenge, beats, or progress..."
+                  placeholder="Ask about your challenge, steps, or progress..."
                   className="rounded-2xl border-border/60 focus:border-primary/60 focus:ring-2 focus:ring-primary/20 bg-card/80 backdrop-blur-sm pl-4 pr-4 py-3 text-sm placeholder:text-muted-foreground/70 shadow-sm"
                   disabled={chatLoading}
                 />

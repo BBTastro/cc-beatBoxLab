@@ -15,7 +15,7 @@ import {
   StoredReward,
   StoredMotivationalStatement,
   STORAGE_KEYS,
-  BeatBoxEvent
+  StepBoxEvent
 } from '@/lib/types';
 
 interface ChallengeContextType {
@@ -80,7 +80,7 @@ interface ChallengeContextType {
   refreshData: () => Promise<void>;
   
   // Event system
-  emitEvent: (event: BeatBoxEvent) => void;
+  emitEvent: (event: StepBoxEvent) => void;
 }
 
 const ChallengeContext = createContext<ChallengeContextType | null>(null);
@@ -108,15 +108,15 @@ export function ChallengeProvider({ children, userId }: ChallengeProviderProps) 
   const [isLoading, setIsLoading] = useState(true);
 
   // Event emitter for cross-component communication
-  const emitEvent = useCallback((event: BeatBoxEvent) => {
-    window.dispatchEvent(new CustomEvent(`beatbox-${event}`, { detail: { userId } }));
+  const emitEvent = useCallback((event: StepBoxEvent) => {
+    window.dispatchEvent(new CustomEvent(`stepbox-${event}`, { detail: { userId } }));
   }, [userId]);
 
   // Migration function to move beat details from global to per-challenge storage
   const migrateBeatDetails = useCallback(async () => {
     try {
       // Check if old global beat details exist
-      const oldGlobalDetails = localStorage.getItem(`beatbox-beat-details-${userId}`);
+      const oldGlobalDetails = localStorage.getItem(`stepbox-beat-details-${userId}`);
       if (oldGlobalDetails) {
         console.log('Migrating beat details from global to per-challenge storage...');
         
@@ -143,7 +143,7 @@ export function ChallengeProvider({ children, userId }: ChallengeProviderProps) 
         }
         
         // Remove old global storage
-        localStorage.removeItem(`beatbox-beat-details-${userId}`);
+        localStorage.removeItem(`stepbox-beat-details-${userId}`);
         console.log('Beat details migration completed');
       }
     } catch (error) {
@@ -1099,7 +1099,7 @@ export function ChallengeProvider({ children, userId }: ChallengeProviderProps) 
   // Listen for storage events from other tabs
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key?.startsWith(`beatbox-`) && e.key.includes(userId)) {
+      if (e.key?.startsWith(`stepbox-`) && e.key.includes(userId)) {
         refreshData();
       }
     };

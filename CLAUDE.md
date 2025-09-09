@@ -1,4 +1,4 @@
-# beatBox Project Guidelines
+# stepBox Project Guidelines
 
 ## Development Rules
 - Always run the LINT and TYPESCHECK scripts after completing your changes. This is to check for any issues.
@@ -7,7 +7,7 @@
 
 ## Project Context
 
-beatBox is a comprehensive goal tracking application featuring:
+stepBox is a comprehensive goal tracking application featuring:
 
 ### Core Features
 1. **Beat Grid Tracking** - Visual daily progress tracking with phase organization

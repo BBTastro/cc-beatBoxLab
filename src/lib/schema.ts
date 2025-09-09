@@ -51,7 +51,7 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
-// BeatBox application tables
+// StepBox application tables
 export const challenges = pgTable("challenges", {
   id: text("id").primaryKey(),
   userId: text("userId")

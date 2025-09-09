@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Allies Network feature enables users to build and manage a structured support system for their goal achievement journey. Users can invite allies, configure multi-platform notification preferences, and organize their support network with detailed contact information and role definitions.
+The Allies Network feature enables users to build and manage a comprehensive support system for their goal achievement journey. Users can organize allies with detailed contact information, configure multi-platform notification preferences (Email, SMS, Slack, Discord, Telegram), and manage their support network with role-based organization.
 
 ## What is the Allies Network
 

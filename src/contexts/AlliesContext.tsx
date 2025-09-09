@@ -5,7 +5,7 @@ import {
   Ally, 
   StoredAlly,
   STORAGE_KEYS,
-  BeatBoxEvent,
+  StepBoxEvent,
   DEFAULT_NOTIFICATION_PREFERENCES
 } from '@/lib/types';
 
@@ -22,7 +22,7 @@ interface AlliesContextType {
   refreshData: () => Promise<void>;
   
   // Event system
-  emitEvent: (event: BeatBoxEvent) => void;
+  emitEvent: (event: StepBoxEvent) => void;
 }
 
 const AlliesContext = createContext<AlliesContextType | null>(null);
@@ -45,8 +45,8 @@ export function AlliesProvider({ children, userId }: AlliesProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Event emitter for cross-component communication
-  const emitEvent = useCallback((event: BeatBoxEvent) => {
-    window.dispatchEvent(new CustomEvent(`beatbox-${event}`, { detail: { userId } }));
+  const emitEvent = useCallback((event: StepBoxEvent) => {
+    window.dispatchEvent(new CustomEvent(`stepbox-${event}`, { detail: { userId } }));
   }, [userId]);
 
   // Load data from localStorage

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The beatBox ChatBot is an AI-powered assistant integrated into the beatBox application that provides personalized coaching and guidance for users' daily goal tracking challenges. It leverages the AI SDK with OpenAI's GPT models to deliver real-time streaming responses.
+The stepBox ChatBot is an AI-powered assistant integrated into the stepBox application that provides personalized coaching and guidance for users' daily goal tracking challenges. It leverages the AI SDK with OpenAI's GPT models to deliver real-time streaming responses.
 
 ## Features
 
@@ -21,7 +21,7 @@ The beatBox ChatBot is an AI-powered assistant integrated into the beatBox appli
 3. **Intelligent Data Integration**
    - Fetches and includes:
      - Current challenge details (title, description, duration, status)
-     - Progress statistics (completed beats, total beats, percentage)
+     - Progress statistics (completed steps, total steps, percentage)
      - Recent beat details with categories and tags
      - Rewards and achievements
    - **Enhanced tag analysis** with prominent tag display and summary
@@ -219,7 +219,7 @@ OPENAI_MODEL=gpt-4o-mini  # Default model
 ### System Prompt
 
 The chatbot uses a comprehensive system prompt that:
-- Defines its role as beatBox Assistant
+- Defines its role as stepBox Assistant
 - Provides context about the application
 - Sets boundaries for responses
 - Includes user's actual challenge data
@@ -263,7 +263,7 @@ The chatbot uses a comprehensive system prompt that:
 **Problem**: The chatbot was displaying beat detail creation timestamps instead of the assigned challenge day dates, causing confusion about when entries actually occurred.
 
 **Solution**: 
-- Enhanced data formatting to join beat details with their corresponding beats
+- Enhanced data formatting to join beat details with their corresponding steps
 - Now displays format: `Day X (date)` instead of just creation timestamp
 - Added proper beat-to-detail relationship validation
 - Implemented fallback to creation date if beat data unavailable

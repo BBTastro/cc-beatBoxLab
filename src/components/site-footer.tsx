@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Speaker, ListChecks, MoveRight, Target } from "lucide-react";
+import { TrendingUp, ListChecks, BarChart3, MoveRight, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TabItem {
@@ -14,13 +14,18 @@ interface TabItem {
 const tabs: TabItem[] = [
   {
     href: "/beats",
-    label: "beats",
-    icon: Speaker,
+    label: "steps",
+    icon: TrendingUp,
   },
   {
     href: "/details",
     label: "Details", 
     icon: ListChecks,
+  },
+  {
+    href: "/stats",
+    label: "Stats",
+    icon: BarChart3,
   },
   {
     href: "/move",

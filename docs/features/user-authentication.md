@@ -2,7 +2,7 @@
 
 ## Overview
 
-The User Authentication feature provides secure, streamlined access control using Better Auth with Google OAuth integration. Users can sign in with their Google accounts for seamless access while maintaining complete data privacy and security across all beatBox features.
+The User Authentication feature provides secure, streamlined access control using Better Auth with Google OAuth integration. Users can sign in with their Google accounts for seamless access while maintaining complete data privacy and security across all stepBox features including beats, rewards, motivational statements, and allies network.
 
 ## What is User Authentication
 
@@ -47,7 +47,7 @@ Goal tracking applications need:
 
 - **Privacy-Conscious Users**: Individuals who require secure data handling
 - **Google Ecosystem Users**: People already using Google services for convenience
-- **Multi-Device Users**: Users accessing beatBox across different devices and browsers
+- **Multi-Device Users**: Users accessing stepBox across different devices and browsers
 
 ### Secondary Users
 
@@ -58,12 +58,12 @@ Goal tracking applications need:
 
 ### Primary Workflow
 
-1. **Access Application**: Navigate to any beatBox feature
+1. **Access Application**: Navigate to any stepBox feature
 2. **Authentication Check**: System verifies current authentication status
 3. **Login Prompt**: Unauthenticated users see authentication page
 4. **Google Sign-In**: Click Google OAuth button for authentication
 5. **Session Establishment**: Secure session created with user profile access
-6. **Feature Access**: Full access to all beatBox functionality
+6. **Feature Access**: Full access to all stepBox functionality
 
 ### Alternative Workflows
 

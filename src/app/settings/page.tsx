@@ -70,14 +70,14 @@ function ChallengeCard({ challenge, isDefault, onEdit, onDelete, onSetActive }: 
       calculateCompletionRate();
     };
 
-    window.addEventListener('beatbox-beat-completed', handleBeatEvent);
-    window.addEventListener('beatbox-beat-uncompleted', handleBeatEvent);
-    window.addEventListener('beatbox-data-refresh', handleBeatEvent);
+    window.addEventListener('stepbox-beat-completed', handleBeatEvent);
+    window.addEventListener('stepbox-beat-uncompleted', handleBeatEvent);
+    window.addEventListener('stepbox-data-refresh', handleBeatEvent);
 
     return () => {
-      window.removeEventListener('beatbox-beat-completed', handleBeatEvent);
-      window.removeEventListener('beatbox-beat-uncompleted', handleBeatEvent);
-      window.removeEventListener('beatbox-data-refresh', handleBeatEvent);
+      window.removeEventListener('stepbox-beat-completed', handleBeatEvent);
+      window.removeEventListener('stepbox-beat-uncompleted', handleBeatEvent);
+      window.removeEventListener('stepbox-data-refresh', handleBeatEvent);
     };
   }, [challenge.id, getChallengeCompletionStats]);
 
@@ -416,6 +416,7 @@ function CreateChallengeDialog({ isOpen, onClose, onSubmit, editingChallenge }: 
                   max="1000"
                   value={formData.duration}
                   onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 1 })}
+                  disabled={!!editingChallenge}
                   required
                 />
               </div>
@@ -431,6 +432,7 @@ function CreateChallengeDialog({ isOpen, onClose, onSubmit, editingChallenge }: 
                     const localDate = new Date(year, month - 1, day); // month is 0-indexed
                     setFormData({ ...formData, startDate: localDate });
                   }}
+                  disabled={!!editingChallenge}
                   required
                 />
               </div>
@@ -771,15 +773,15 @@ function SettingsContent() {
       let filename: string, content: string, mimeType: string;
       
       if (format === 'json') {
-        filename = `beatbox-${challengeName}-${dateStamp}.json`;
+        filename = `stepbox-${challengeName}-${dateStamp}.json`;
         content = JSON.stringify(exportedData, null, 2);
         mimeType = 'application/json';
       } else if (format === 'csv') {
-        filename = `beatbox-${challengeName}-${dateStamp}.csv`;
+        filename = `stepbox-${challengeName}-${dateStamp}.csv`;
         content = convertToCSV(exportedData);
         mimeType = 'text/csv';
       } else {
-        filename = `beatbox-${challengeName}-${dateStamp}.md`;
+        filename = `stepbox-${challengeName}-${dateStamp}.md`;
         content = convertToMarkdown(exportedData);
         mimeType = 'text/markdown';
       }
@@ -870,7 +872,7 @@ function SettingsContent() {
   };
 
   const convertToMarkdown = (data: any) => {
-    let md = `# beatBox Data Export\n\n`;
+    let md = `# stepBox Data Export\n\n`;
     md += `**Export Date:** ${data.exportDate}\n`;
     md += `**User:** ${data.user.name} (${data.user.email})\n\n`;
     
@@ -1069,7 +1071,7 @@ function SettingsContent() {
       if (session?.user?.id) {
         const keys = Object.keys(localStorage);
         keys.forEach(key => {
-          if (key.includes(`beatbox-`) && key.includes(session.user.id)) {
+          if (key.includes(`stepbox-`) && key.includes(session.user.id)) {
             localStorage.removeItem(key);
           }
         });
@@ -1156,7 +1158,7 @@ function SettingsContent() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-6">
-              Export your challenges, beats, details, rewards, and motivational statements in your preferred format.
+              Export your challenges, steps, details, rewards, and motivational statements in your preferred format.
               Choose a specific challenge or export all data.
             </p>
             <Button
